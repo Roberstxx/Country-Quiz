@@ -3,26 +3,23 @@
 html, body, #root { height: 100%; }
 html { scroll-behavior: smooth; }
 
-/* Tipografía fluida */
+/* Tipografía fluida + safe areas iOS */
 :root{
   --fs-sm: clamp(12px, 1.4vw, 14px);
   --fs-md: clamp(14px, 1.6vw, 16px);
   --fs-lg: clamp(18px, 2.5vw, 24px);
   --fs-xl: clamp(24px, 4vw, 36px);
-
-  /* Safe areas iOS */
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
 }
 
-/* ===== Body ===== */
+/* ===== Body (FONDO con imagen) ===== */
 body{
   margin: 0;
   font-family: 'Be Vietnam Pro', system-ui, Segoe UI, Roboto, Arial, sans-serif;
   font-size: var(--fs-md);
   color: var(--text);
-  /* Fondo: solo imagen (ajusta ruta si cambias de carpeta) */
-  background: url("/src/assets/bg.jpg") center/cover fixed no-repeat;
+  background: url("/src/assets/bg.jpg") center/cover fixed no-repeat; /* ajusta la ruta si cambias */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -42,8 +39,8 @@ body{
 .center-text{ text-align: center; }
 .m0{ margin: 0; }
 .row{ display: flex; gap: 16px; }
-.center{ align-items: center; display: flex; }
-.space-between{ justify-content: space-between; display: flex; }
+.center{ display:flex; align-items: center; }
+.space-between{ display:flex; justify-content: space-between; }
 
 /* Tipos */
 .title{ font-size: var(--fs-xl); font-weight: 700; margin: 8px 0 12px; line-height: 1.2; }
@@ -83,29 +80,15 @@ body{
   }
 }
 
-/* ===== Imágenes responsivas por defecto ===== */
+/* ===== Imágenes responsivas ===== */
 img{ max-width: 100%; height: auto; display: block; }
 
-/* ===== Helpers opcionales ===== */
-/* Contenedor centrado verticalmente en toda la vista */
-.full-center{
-  min-height: calc(100vh - 120px);
-  display: grid;
-  place-items: center;
-}
-
-/* Limitar ancho de bloques de texto largos */
-.prose{
-  max-width: 70ch;
-}
-
-/* Ocultar solo visualmente (accesible para lectores) */
+/* ===== Helpers ===== */
+.full-center{ min-height: calc(100vh - 120px); display: grid; place-items: center; }
+.prose{ max-width: 70ch; }
 .visually-hidden{
-  position: absolute !important;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0,0,0,0);
-  white-space: nowrap; border: 0;
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 
 
