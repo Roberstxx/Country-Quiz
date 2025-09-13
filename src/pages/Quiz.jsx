@@ -1,23 +1,26 @@
 // src/pages/Quiz.jsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchCountries, fetchCountriesLight } from "/src/services/countriesApi.js";
 import { buildByType } from "/src/services/questionBuilder.js";
 import { getInitialMode } from "/src/utils/modes.js";
+
 import Bubble from "/src/components/Bubble.jsx";
 import OptionItem from "/src/components/OptionItem.jsx";
 import ProgressBar from "/src/components/ProgressBar.jsx";
 
 const TOTAL = 10;
 
-export default function Quiz(){
-  const [mode, setMode] = useState(getInitialMode()); // "flag" | "capital" | ...
+export default function Quiz() {
+  // ---- Hooks SIEMPRE al tope (orden estable) ----
+  const [mode, setMode] = useState(getInitialMode()); // "flag" | "capital" | "region" | ...
   const [status, setStatus] = useState("loading");    // loading | ready | error
   const [questions, setQuestions] = useState([]);
   const [idx, setIdx] = useState(0);
   const [locked, setLocked] = useState(false);
   const [choice, setChoice] = useState(null);
+  const cardRef = useRef(null);
 
-  // Carga países y prepara preguntas según el modo
+  // Carga países y arma el banco de preguntas según modo
   useEffect(() => {
     (async () => {
       try {
@@ -28,33 +31,49 @@ export default function Quiz(){
         const qb = buildByType(countries, mode, TOTAL);
         setQuestions(qb);
         setStatus("ready");
-      } catch (e) {
-        console.error(e);
+        setIdx(0);
+        setLocked(false);
+        setChoice(null);
+      } catch (err) {
+        console.error(err);
         setStatus("error");
       }
     })();
   }, [mode]);
 
-  // Mapa de respuestas guardadas (para no perder feedback al movernos)
-  const answeredMap = useMemo(()=>{
+  // Respuestas previamente guardadas en esta sesión
+  const answeredMap = useMemo(() => {
     const raw = sessionStorage.getItem("quiz.answers");
     return raw ? JSON.parse(raw) : {};
   }, []);
 
+  // Restaurar estado al cambiar de pregunta
   useEffect(() => {
     if (status !== "ready" || !questions[idx]) return;
     const q = questions[idx];
     const saved = answeredMap[q.id];
     if (saved) { setChoice(saved.choice); setLocked(true); }
     else { setChoice(null); setLocked(false); }
+
+    // focus + scroll suave a la tarjeta
+    requestAnimationFrame(() => {
+      cardRef.current?.focus({ preventScroll: true });
+      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx, status, questions]);
 
-  if (status === "loading") return <p className="muted">Cargando preguntas…</p>;
-  if (status === "error")   return <p className="muted">No se pudo cargar la información.</p>;
+  // Navegación por teclado (izq/der)
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === "ArrowRight" && idx < TOTAL - 1) setIdx(i => Math.min(TOTAL - 1, i + 1));
+      else if (e.key === "ArrowLeft" && idx > 0)    setIdx(i => Math.max(0, i - 1));
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [idx]);
 
-  const q = questions[idx];
-
+  // ---- Lógica de respuesta ----
   function persistAnswer(qid, userChoice, correct) {
     const current = JSON.parse(sessionStorage.getItem("quiz.answers") || "{}");
     current[qid] = { choice: userChoice, correct, mode };
@@ -66,6 +85,7 @@ export default function Quiz(){
 
   function pick(opt) {
     if (locked) return;
+    const q = questions[idx];
     setChoice(opt);
     const correct = opt === q.answer;
     setLocked(true);
@@ -73,82 +93,115 @@ export default function Quiz(){
   }
 
   function stateFor(opt) {
+    const q = questions[idx];
     if (!locked) return (opt === choice ? "selected" : "idle");
     if (opt === q.answer) return "correct";
     if (opt === choice && opt !== q.answer) return "wrong";
     return "idle";
   }
 
-  function go(i) { setIdx(i); }
+  const canPrev = idx > 0;
+  const canNext = idx < TOTAL - 1;
+  const go = (i) => setIdx(i);
+  const next = () => canNext && setIdx(idx + 1);
+  const prev = () => canPrev && setIdx(idx - 1);
+  const finish = () => { window.location.href = "/results"; };
 
-  function finish() {
-    window.location.href = "/results";
+  // ---- Contenido condicional (sin returns antes de hooks) ----
+  let content = null;
+
+  if (status === "loading") {
+    content = <p className="muted">Cargando preguntas…</p>;
+  } else if (status === "error") {
+    content = <p className="muted">No se pudo cargar la información.</p>;
+  } else if (questions.length) {
+    const q = questions[idx];
+
+    content = (
+      <>
+        <div
+          ref={cardRef}
+          className="quiz-card card"
+          tabIndex={-1}
+          aria-labelledby="quiz-question-title"
+        >
+          {/* Modo actual (arriba a la derecha) */}
+          <div className="muted" style={{ textAlign: "right", marginBottom: 6 }}>
+            Modo: <strong>{labelForMode(mode)}</strong>
+          </div>
+
+          {/* Burbujas 1–10 */}
+          <div className="bubbles" aria-label="Navegación de preguntas">
+            {Array.from({ length: TOTAL }).map((_, i) => (
+              <Bubble key={i} number={i + 1} active={i === idx} onClick={() => go(i)} />
+            ))}
+          </div>
+
+          {/* Enunciado */}
+          <h2 id="quiz-question-title" className="subtitle center-text m0" style={{ marginBottom: 18 }}>
+            {q.prompt}
+          </h2>
+
+          {/* Bandera (solo modo “flag”) */}
+          {mode === "flag" && q.flagUrl && (
+            <div style={{ display: "grid", placeItems: "center", marginBottom: 16 }}>
+              <img
+                src={q.flagUrl}
+                alt={`Flag of ${q.answer}`}
+                width="112"
+                height="80"
+                style={{ objectFit: "cover", borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,.25)" }}
+              />
+            </div>
+          )}
+
+          {/* Progreso */}
+          <div className="quiz-toprow">
+            <div className="spacer" />
+            <ProgressBar value={idx + 1} max={TOTAL} />
+            <div className="spacer" />
+          </div>
+
+          {/* Opciones */}
+          <div className="options" role="radiogroup" aria-label="Opciones de respuesta">
+            {q.options.map((opt) => (
+              <OptionItem
+                key={opt}
+                label={opt}           // tu OptionItem con badge ✅/❌ usa 'label'
+                text={opt}            // si tu OptionItem espera 'text', también lo recibe
+                state={stateFor(opt)} // 'idle' | 'selected' | 'correct' | 'wrong'
+                disabled={locked}
+                onClick={() => pick(opt)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Acciones inferiores */}
+        <div className="quiz-actions" aria-label="Controles de navegación">
+          <button className="btn" onClick={prev} disabled={!canPrev}>Anterior</button>
+          <button className="btn" onClick={next} disabled={!canNext}>Siguiente</button>
+          <button className="btn" onClick={finish}>Finalizar</button>
+        </div>
+      </>
+    );
   }
 
   return (
     <section className="quiz-wrap">
-      <div className="quiz-card card">
-        {/* Modo actual como subtítulo pequeño, opcional */}
-        <div className="muted" style={{ textAlign:"right", marginBottom:6 }}>
-          Modo: <strong>{labelForMode(mode)}</strong>
-        </div>
-
-        <div className="bubbles" aria-label="Navegación de preguntas">
-          {Array.from({length: TOTAL}).map((_, i) => (
-            <Bubble key={i} number={i+1} active={i===idx} onClick={()=> go(i)} />
-          ))}
-        </div>
-
-        <h2 className="subtitle center-text m0" style={{ marginBottom: 18 }}>{q.prompt}</h2>
-
-        {/* Mostrar bandera solo en modo "flag" */}
-        {mode === "flag" && q.flagUrl && (
-          <div style={{ display: "grid", placeItems: "center", marginBottom: 16 }}>
-            <img
-              src={q.flagUrl}
-              alt={`Flag of ${q.answer}`}
-              width="112"
-              height="80"
-              style={{ objectFit: "cover", borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,.25)" }}
-            />
-          </div>
-        )}
-
-        <div className="quiz-toprow">
-          <div className="spacer" />
-          <ProgressBar value={idx + 1} max={TOTAL} />
-          <div className="spacer" />
-        </div>
-
-        <div className="options" role="radiogroup" aria-label="Opciones de respuesta">
-          {q.options.map((opt) => (
-            <OptionItem
-              key={opt}
-              text={opt}
-              state={stateFor(opt)}
-              disabled={locked}
-              onClick={() => pick(opt)}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="quiz-actions" style={{ display: "flex", gap: 12, marginTop: 16 }}>
-        <button className="btn" onClick={()=> go(Math.max(0, idx - 1))}>Anterior</button>
-        <button className="btn" onClick={()=> go(Math.min(TOTAL - 1, idx + 1))}>Siguiente</button>
-        <button className="btn" onClick={finish}>Finalizar</button>
-      </div>
+      {content}
     </section>
   );
 }
 
-function labelForMode(mode){
-  switch(mode){
-    case "flag": return "Banderas";
-    case "capital": return "Capitales";
-    case "region": return "Regiones";
+function labelForMode(mode) {
+  switch (mode) {
+    case "flag":     return "Banderas";
+    case "capital":  return "Capitales";
+    case "region":   return "Regiones";
     case "currency": return "Monedas";
     case "language": return "Idiomas";
-    default: return mode;
+    default:         return mode;
   }
 }
+
