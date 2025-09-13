@@ -62,22 +62,66 @@
 .option:disabled{ opacity:.8; cursor: not-allowed; }
 
 /* Progreso */
-.quiz-toprow{ display:grid; grid-template-columns: 1fr minmax(240px, 420px) 1fr; align-items:center; gap:12px; margin: 12px 0 24px; }
-.spacer{ height:1px; }
-.progress{ width:100%; height:8px; background:#2f3464; border-radius:999px; overflow:hidden; }
-.progress-fill{ height:100%; background: var(--grad); }
+/* Fila donde vive la barra de progreso */
+.quiz-toprow{
+  display: grid;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 24px;
+  grid-template-columns: 1fr;                 /* móvil: 1 columna */
+}
+
+/* desde 600px volvemos al layout centrado con 3 columnas */
+@media (min-width: 600px){
+  .quiz-toprow{
+    grid-template-columns: 1fr minmax(240px, 520px) 1fr; /* centro elástico */
+  }
+}
 
 /* Result hero */
 .result-hero{ width:72px; height:72px; border-radius:50%; background:#FFECC8; display:grid; place-items:center; margin:0 auto 12px; font-size:32px; }
 
+/* Botonera: mismo ancho de la card y alineada a su contenido */
 .quiz-actions{
-  display: flex;
-  justify-content: space-between; /* reparte izq, centro, der */
+  /* caja */
+  display: grid;
+  grid-auto-flow: column;                /* 3 columnas automáticas */
+  grid-auto-columns: minmax(132px, 220px);/* ancho de cada botón */
+  gap: 16px;
   align-items: center;
-  gap: 12px;
+
+  /* ancho y centrado iguales a la card */
+  max-width: 880px;                      /* = .quiz-card */
+  margin: 24px auto 0;
+
+  /* ¡clave!: alinear con el contenido interno de la card */
+  padding-inline: 36px;                  /* = padding-x de .quiz-card */
+  box-sizing: border-box;
+
+  /* espaciar de forma simétrica sin pegarse a los bordes */
+  justify-content: space-between;        /* reemplaza nth-child */
 }
-.quiz-actions .push-right .push-center{
-  margin-left: auto;   /* Empuja “Finalizar” a la derecha */
+
+/* Botón: evita que rompa el grid */
+.quiz-actions .btn{
+  width: 100%;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Móvil: apilados a 100% manteniendo el mismo “marco” */
+@media (max-width: 520px){
+  .quiz-actions{
+    grid-auto-flow: row;   /* columnas -> filas */
+    grid-auto-columns: unset;
+    grid-template-columns: 1fr;
+    max-width: 560px;      /* acompasa con la card móvil */
+    gap: 12px;
+  }
+  .quiz-actions .btn{
+    min-width: 0;
+    justify-self: stretch;
+  }
 }
 
 /* Intro: card ancha y más baja */
@@ -143,7 +187,78 @@ display: block;
   }
 }*/
 
+ /* Barra de progreso — siempre centrada y sin desbordar */
+.progress{
+  width: 100%;
+  max-width: 520px;        /* techo en desktop */
+  height: 8px;
+  background: #2f3464;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-inline: auto;     /* ¡centra! */
+}
+
+.progress-fill{
+  height: 100%;
+  background: var(--grad);
+  /* Si animas el fill, respeta reduce-motion en tu base.css */
+}
+
+
+
+
+
+
+
+
+
+
+/* ===== Badge de feedback (X / Palomita) ===== */
+.option{
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 56px; /* deja espacio al icono */
+}
+
+.option__label{
+  pointer-events: none;
+}
+
+/* anulamos los bordes de correct/wrong, dejamos solo iconos */
+.option.correct,
+.option.wrong{
+  border-color: transparent;
+}
+
+/* Badge circular */
+.option__badge{
+  position: absolute;
+  right: 16px;
+ width: 28px;
+  height: 28px;
+   border-radius: 50%;
+  display: grid;
+ place-items: center;
+ /*  box-shadow: var(--shadow-2);
+  background: rgba(255, 253, 253, 0.25);*/
+}
+
+.option__badge img{ width: 16px; height: 16px; display: block; }
+
+/* Colores según estado */
+
+
+/* móvil */
+@media (max-width: 420px){
+  .option{ padding-right: 48px; }
+  .option__badge{ right: 12px; width: 26px; height: 26px; }
+  .option__badge img{ width: 15px; height: 15px; }
+}
+
   
 
   
+
 
