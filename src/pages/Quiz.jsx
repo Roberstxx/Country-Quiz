@@ -1,5 +1,6 @@
 // src/pages/Quiz.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchCountries, fetchCountriesLight } from "/src/services/countriesApi.js";
 import { buildByType } from "/src/services/questionBuilder.js";
 import { getInitialMode } from "/src/utils/modes.js";
@@ -12,8 +13,10 @@ const TOTAL = 10;
 
 export default function Quiz() {
   // ---- Hooks SIEMPRE al tope (orden estable) ----
-  const [mode, setMode] = useState(getInitialMode()); // "flag" | "capital" | "region" | ...
-  const [status, setStatus] = useState("loading");    // loading | ready | error
+  const navigate = useNavigate();
+
+  const [mode] = useState(getInitialMode());         // "flag" | "capital" | "region" | ...
+  const [status, setStatus] = useState("loading");   // loading | ready | error
   const [questions, setQuestions] = useState([]);
   const [idx, setIdx] = useState(0);
   const [locked, setLocked] = useState(false);
@@ -66,12 +69,12 @@ export default function Quiz() {
   // Navegación por teclado (izq/der)
   useEffect(() => {
     function onKey(e) {
-      if (e.key === "ArrowRight" && idx < TOTAL - 1) setIdx(i => Math.min(TOTAL - 1, i + 1));
-      else if (e.key === "ArrowLeft" && idx > 0)    setIdx(i => Math.max(0, i - 1));
+      if (e.key === "ArrowRight") setIdx(i => Math.min(TOTAL - 1, i + 1));
+      else if (e.key === "ArrowLeft") setIdx(i => Math.max(0, i - 1));
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [idx]);
+  }, []);
 
   // ---- Lógica de respuesta ----
   function persistAnswer(qid, userChoice, correct) {
@@ -102,10 +105,10 @@ export default function Quiz() {
 
   const canPrev = idx > 0;
   const canNext = idx < TOTAL - 1;
-  const go = (i) => setIdx(i);
-  const next = () => canNext && setIdx(idx + 1);
-  const prev = () => canPrev && setIdx(idx - 1);
-  const finish = () => { window.location.href = "/results"; };
+  const go    = (i) => setIdx(i);
+  const next  = () => canNext && setIdx(idx + 1);
+  const prev  = () => canPrev && setIdx(idx - 1);
+  const finish = () => navigate("/results"); // ← SPA: sin recargar
 
   // ---- Contenido condicional (sin returns antes de hooks) ----
   let content = null;
@@ -167,8 +170,8 @@ export default function Quiz() {
             {q.options.map((opt) => (
               <OptionItem
                 key={opt}
-                label={opt}           // tu OptionItem con badge ✅/❌ usa 'label'
-                text={opt}            // si tu OptionItem espera 'text', también lo recibe
+                label={opt}           // si tu OptionItem usa 'label'
+                text={opt}            // o 'text'; deja ambos para compatibilidad
                 state={stateFor(opt)} // 'idle' | 'selected' | 'correct' | 'wrong'
                 disabled={locked}
                 onClick={() => pick(opt)}
@@ -204,4 +207,6 @@ function labelForMode(mode) {
     default:         return mode;
   }
 }
+
+
 
