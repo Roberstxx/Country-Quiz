@@ -69,3 +69,78 @@
 
 /* Result hero */
 .result-hero{ width:72px; height:72px; border-radius:50%; background:#FFECC8; display:grid; place-items:center; margin:0 auto 12px; font-size:32px; }
+
+.quiz-actions{
+  display: flex;
+  justify-content: space-between; /* reparte izq, centro, der */
+  align-items: center;
+  gap: 12px;
+}
+.quiz-actions .push-right .push-center{
+  margin-left: auto;   /* Empuja “Finalizar” a la derecha */
+}
+
+/* Intro: card ancha y más baja */
+.intro .card{
+  max-width: 560px;     /* antes ~560 */
+  padding: 36px 90px;   /* más aire horizontal */
+  border-radius: 18px;  /* un pelín más redonda */
+}
+/* Centra el botón en Intro */
+.intro .btn{
+display: block;
+  margin: 0 auto;
+}
+
+/*sentra el Footer*/
+.footer .container {
+  display: flex;
+  justify-content: center; /* centra horizontal */
+  align-items: center;     /* centra vertical si tiene altura fija */
+}
+
+/* burbujas  */
+
+.bubbles {
+  display: flex;
+  flex-wrap: wrap;         /* Permite que bajen de línea en pantallas pequeñas */
+  justify-content: center; /* Centra las burbujas */
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.bubble {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-dark, #343964);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.bubble.active {
+  background: linear-gradient(135deg, #E65895, #BC6BE8);
+  transform: scale(1.1);
+}
+
+/* Ajustes para pantallas pequeñas 
+
+@media (max-width: 480px) {
+  .bubbles {
+    gap: 6px;
+  }
+
+  .bubble {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+}*/
+
+  
