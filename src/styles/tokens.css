@@ -1,15 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
 
 :root{
+  /* Colores base */
   --card: #2A2F58;
   --text: #E2E4F3;
   --muted: #B8BECD;
+
+  /* Opciones */
   --opt: #3A3F6B;
   --opt-hover: #454B77;
+
+  /* Estados */
   --success: #34D399;
   --error: #F87171;
+
+  /* Dimensiones y efectos */
   --radius: 16px;
   --shadow-1: 0 10px 30px rgba(0,0,0,.35);
   --shadow-2: 0 6px 12px rgba(0,0,0,.2);
+
+  /* Gradiente primario */
   --grad: linear-gradient(90deg, #E65895 0%, #BC6BE8 100%);
 }
