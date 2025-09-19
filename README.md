@@ -93,7 +93,7 @@ npm run preview
 
 ## 🌐 Demo en línea
 
-👉 [Ver demo desplegada](https://tu-demo.vercel.app/)  
+👉 [Ver demo desplegada](https://country-quiz-pink.vercel.app/https://tu-demo.vercel.app/)  
 👉 [Repositorio en GitHub](https://github.com/tuusuario/paises-quiz)
 
 ---
@@ -157,5 +157,5 @@ Este proyecto me permitió reforzar:
 
 ## 👨‍💻 Autor
 
-Proyecto desarrollado por **[Tu Nombre]** como parte del reto [DevChallenges.io](https://devchallenges.io/).  
-Si quieres contactarme: [tu-email@example.com] · [LinkedIn](https://linkedin.com/in/tuusuario)
+Proyecto desarrollado por **roberstxx** como parte del reto [DevChallenges.io](https://devchallenges.io/).  
+
