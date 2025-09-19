@@ -1,264 +1,278 @@
-/* Card y contenedores */
-.card{ background: var(--card); border-radius: var(--radius); padding: 32px; box-shadow: var(--shadow-1); }
-.intro{ display:grid; place-items:center; min-height: calc(100vh - 120px); }
-.quiz-wrap{ max-width: 980px; margin: 0 auto; padding: 24px; }
-.quiz-card{ margin: 24px auto; padding: 40px 36px; max-width: 880px; }
-.results{ display:grid; place-items:center; min-height: calc(100vh - 120px); }
-.results-card{ text-align:center; max-width: 560px; }
+/* =========================================================
+   COMPONENTS.CSS — UI del Quiz
+   - Card, formularios, botones genéricos (.btn)
+   - Burbujas de navegación (1..10) con layout responsive
+   - Opciones con estados + badge (✅/❌)
+   - Barra de Progreso centrada y adaptable
+   - Extras Results + (Intro opcional)
+   ---------------------------------------------------------
+   
+   ========================================================= */
 
-/* Form */
-.label{ display:grid; gap:6px; margin: 10px 0 16px; }
-.label-text{ font-size:13px; font-weight:600; color: var(--muted); }
+
+/* ===== Card y contenedores ===== */
+.card{
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow-1);
+}
+.intro{                 /* Puedes eliminar si no usas Intro */
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 120px);
+}
+.quiz-wrap{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px;
+}
+.quiz-card{
+  margin: 24px auto;
+  padding: 40px 36px;
+  max-width: 880px;     /* Mantén coordinado con layout del contenedor */
+}
+.results{
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 120px);
+}
+.results-card{
+  text-align: center;
+  max-width: 560px;
+}
+
+
+/* ===== Form ===== */
+.label{
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 16px;
+}
+.label-text{
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
 .input{
-  border:1px solid #3b3f6f; border-radius: var(--radius);
-  padding: 12px 14px; background: #1f2449; color: var(--text);
+  border: 1px solid #3b3f6f;
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  background: #1f2449;
+  color: var(--text);
   transition: border-color .12s ease;
 }
-.input:focus{ outline:none; border-color:#8f95ff; }
+.input:focus{
+  outline: none;
+  border-color: #8f95ff;
+}
 
-/* Botones */
+
+/* ===== Botones genéricos (se usan en Results) ===== */
 .btn{
-  display:inline-block; border:none; cursor:pointer;
-  padding: 12px 18px; color:#fff; background: var(--grad);
-  border-radius: 12px; font-weight:600; font-size:16px;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  padding: 12px 18px;
+  color: #fff;
+  background: var(--grad);
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
   transition: transform .12s ease, filter .12s ease;
 }
 .btn:hover{ transform: translateY(-1px); filter: brightness(1.02); }
 .btn:active{ transform: translateY(0); }
-.btn:disabled{ opacity:.6; cursor:not-allowed; }
+.btn:disabled{ opacity: .6; cursor: not-allowed; }
 
-/* Pill de puntaje */
+
+/* ===== Pill de puntaje ===== */
 .score-pill{
-  background: var(--grad); color:#fff; padding:8px 14px; border-radius:999px;
-  font-size:14px; font-weight:600; box-shadow: var(--shadow-2);
-}
-
-/* Burbujas */
-.bubbles{ display:flex; gap:14px; justify-content:center; align-items:center; margin-bottom:22px; }
-.bubble{
-  width:40px; height:40px; border-radius:50%;
-  display:grid; place-items:center; background: var(--opt); color:#fff; opacity:.85;
-  transition: transform .12s ease, opacity .12s ease, background .12s ease, box-shadow .12s ease;
-  border:none; cursor:pointer;
-}
-.bubble:hover{ transform: translateY(-2px); opacity:1; }
-.bubble.active{ background: var(--grad); font-weight:700; box-shadow: var(--shadow-2); transform: translateY(-2px); }
-
-/* Opciones */
-.options{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 10px; }
-@media (max-width: 768px){ .options{ grid-template-columns:1fr; } }
-
-.option{
-  background: var(--opt); border-radius: 16px; padding: 18px 20px;
-  border: 2px solid transparent; cursor:pointer; text-align:center; color: var(--text);
+  background: var(--grad);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
   font-weight: 600;
-  transition: transform .08s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease, filter .12s ease;
-  box-shadow: none;
-}
-.option:hover{ background: var(--opt-hover); transform: translateY(-1px); }
-.option.selected{ background: var(--grad); color:#fff; box-shadow: var(--shadow-2); }
-.option.correct{ border-color: var(--success); }
-.option.wrong{ border-color: var(--error); }
-.option:disabled{ opacity:.8; cursor: not-allowed; }
-
-/* Progreso */
-/* Fila donde vive la barra de progreso */
-.quiz-toprow{
-  display: grid;
-  align-items: center;
-  gap: 12px;
-  margin: 12px 0 24px;
-  grid-template-columns: 1fr;                 /* móvil: 1 columna */
+  box-shadow: var(--shadow-2);
 }
 
-/* desde 600px volvemos al layout centrado con 3 columnas */
-@media (min-width: 600px){
-  .quiz-toprow{
-    grid-template-columns: 1fr minmax(240px, 520px) 1fr; /* centro elástico */
-  }
-}
 
-/* Result hero */
-.result-hero{ width:72px; height:72px; border-radius:50%; background:#FFECC8; display:grid; place-items:center; margin:0 auto 12px; font-size:32px; }
-
-/* Botonera: mismo ancho de la card y alineada a su contenido */
-.quiz-actions{
-  /* caja */
-  display: grid;
-  grid-auto-flow: column;                /* 3 columnas automáticas */
-  grid-auto-columns: minmax(132px, 220px);/* ancho de cada botón */
-  gap: 16px;
-  align-items: center;
-
-  /* ancho y centrado iguales a la card */
-  max-width: 880px;                      /* = .quiz-card */
-  margin: 24px auto 0;
-
-  /* ¡clave!: alinear con el contenido interno de la card */
-  padding-inline: 36px;                  /* = padding-x de .quiz-card */
-  box-sizing: border-box;
-
-  /* espaciar de forma simétrica sin pegarse a los bordes */
-  justify-content: space-between;        /* reemplaza nth-child */
-}
-
-/* Botón: evita que rompa el grid */
-.quiz-actions .btn{
-  width: 100%;
-  white-space: nowrap;
-  text-align: center;
-}
-
-/* Móvil: apilados a 100% manteniendo el mismo “marco” */
-@media (max-width: 520px){
-  .quiz-actions{
-    grid-auto-flow: row;   /* columnas -> filas */
-    grid-auto-columns: unset;
-    grid-template-columns: 1fr;
-    max-width: 560px;      /* acompasa con la card móvil */
-    gap: 12px;
-  }
-  .quiz-actions .btn{
-    min-width: 0;
-    justify-self: stretch;
-  }
-}
-
-/* Intro: card ancha y más baja */
-.intro .card{
-  max-width: 560px;     /* antes ~560 */
-  padding: 36px 90px;   /* más aire horizontal */
-  border-radius: 18px;  /* un pelín más redonda */
-}
-/* Centra el botón en Intro */
-.intro .btn{
-display: block;
-  margin: 0 auto;
-}
-
-/*sentra el Footer*/
-.footer .container {
-  display: flex;
-  justify-content: center; /* centra horizontal */
-  align-items: center;     /* centra vertical si tiene altura fija */
-}
-
-/* burbujas  */
-
+/* ===== Burbujas originales ===== */
 .bubbles {
   display: flex;
-  flex-wrap: wrap;         /* Permite que bajen de línea en pantallas pequeñas */
-  justify-content: center; /* Centra las burbujas */
-  gap: 8px;
-  margin-bottom: 16px;
+  flex-wrap: wrap;         /* permite que bajen de línea en pantallas pequeñas */
+  justify-content: center; /* centradas */
+  gap: 12px;
+  margin-bottom: 22px;
 }
 
 .bubble {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: var(--primary-dark, #343964);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
+  background: var(--opt);  /* color neutro */
+  color: #fff;
   font-size: 14px;
   font-weight: 600;
-  color: #fff;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.3s ease;
+  transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+  border: #1f2449;
+}
+
+.bubble:hover {
+  transform: translateY(-2px);
+  opacity: 1;
 }
 
 .bubble.active {
-  background: linear-gradient(135deg, #E65895, #BC6BE8);
-  transform: scale(1.1);
+  background: var(--grad);     /* gradiente activo */
+  font-weight: 700;
+  box-shadow: var(--shadow-2); /* sombra para resaltar */
+  transform: translateY(-2px);
+  border: #1f2449;
 }
 
-/* Ajustes para pantallas pequeñas 
-
+/* Responsive: en pantallas muy chicas se achican */
 @media (max-width: 480px) {
-  .bubbles {
-    gap: 6px;
-  }
-
   .bubble {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     font-size: 12px;
   }
-}*/
+}
 
- /* Barra de progreso — siempre centrada y sin desbordar */
+
+
+
+/* ===== Opciones ===== */
+.options{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 10px;
+}
+@media (max-width: 768px){
+  .options{ grid-template-columns: 1fr; }
+}
+.option{
+  background: var(--opt);
+  border-radius: 16px;
+  padding: 18px 20px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  text-align: center;
+  color: var(--text);
+  font-weight: 600;
+  transition:
+    transform .08s ease,
+    background .12s ease,
+    border-color .12s ease,
+    box-shadow .12s ease,
+    filter .12s ease;
+  box-shadow: none;
+}
+.option:hover{ background: var(--opt-hover); transform: translateY(-1px); }
+.option.selected{ background: var(--grad); color: #fff; box-shadow: var(--shadow-2); }
+.option.correct{ border-color: var(--success); }
+.option.wrong{ border-color: var(--error); }
+.option:disabled{ opacity: .8; cursor: not-allowed; }
+
+
+/* ===== Progreso (centrado y adaptable) ===== */
+.quiz-toprow{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 12px 0 24px;
+  justify-items: center;
+}
+@media (min-width: 600px){
+  .quiz-toprow{ grid-template-columns: 1fr minmax(240px, 520px) 1fr; }
+}
 .progress{
   width: 100%;
-  max-width: 520px;        /* techo en desktop */
+  max-width: 520px;
   height: 8px;
   background: #2f3464;
   border-radius: 999px;
   overflow: hidden;
-  margin-inline: auto;     /* ¡centra! */
+  margin-inline: auto;       /* centrada */
+}
+.progress-fill{ height: 100%; background: var(--grad); }
+
+
+/* ===== Result hero ===== */
+.result-hero{
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: #FFECC8;
+  display: grid; place-items: center;
+  margin: 0 auto 12px;
+  font-size: 32px;
 }
 
-.progress-fill{
-  height: 100%;
-  background: var(--grad);
-  /* Si animas el fill, respeta reduce-motion en tu base.css */
+
+/* ===== Intro (opcional) ===== */
+.intro .card{
+  max-width: 560px;
+  padding: 36px 32px;
+  border-radius: 18px;
+}
+.intro .btn{
+  display: block;
+  margin: 0 auto;
 }
 
 
-
-
-
-
-
-
-
-
-/* ===== Badge de feedback (X / Palomita) ===== */
-.option{
-  position: relative;
+/* ===== Footer ===== */
+.footer .container{
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-right: 56px; /* deja espacio al icono */
 }
 
-.option__label{
-  pointer-events: none;
-}
 
-/* anulamos los bordes de correct/wrong, dejamos solo iconos */
+/* ===== Badge de feedback (✅ / ❌) para opciones =====
+   - Se muestra cuando el estado es .correct o .wrong
+   - Usar junto con OptionItem.jsx que inserta <span class="option__badge"><img .../></span>
+*/
+.option{
+  position: relative;
+  display: flex;            /* etiqueta y badge en el mismo eje */
+  justify-content: center;
+  align-items: center;
+  padding-right: 56px;      /* espacio para el badge a la derecha */
+}
+.option__label{ pointer-events: none; }
+
+/* Si prefieres SOLO iconos, sin color de borde: descomenta esto*/
 .option.correct,
-.option.wrong{
-  border-color: transparent;
-}
+.option.wrong{ border-color: transparent; }
 
-/* Badge circular */
+
+/* Badge circular (contenedor del SVG) */
 .option__badge{
   position: absolute;
   right: 16px;
- width: 28px;
-  height: 28px;
-   border-radius: 50%;
-  display: grid;
- place-items: center;
- /*  box-shadow: var(--shadow-2);
-  background: rgba(255, 253, 253, 0.25);*/
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  /* Puedes añadir sombra/fondo si quieres más contraste:
+  box-shadow: var(--shadow-2);
+  background: rgba(0,0,0,.25);
+  border: 2px solid rgba(255,255,255,.35);
+  */
+}
+.option__badge img{
+  width: 16px; height: 16px; display: block;
 }
 
-.option__badge img{ width: 16px; height: 16px; display: block; }
-
-/* Colores según estado */
-
-
-/* móvil */
+/* Ajuste móvil para que no tape el texto */
 @media (max-width: 420px){
   .option{ padding-right: 48px; }
   .option__badge{ right: 12px; width: 26px; height: 26px; }
   .option__badge img{ width: 15px; height: 15px; }
 }
-
-  
-
-  
-
-
