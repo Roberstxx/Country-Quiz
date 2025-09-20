@@ -8,22 +8,30 @@ import { getInitialMode } from "/src/utils/modes.js";
 import Bubble from "/src/components/Bubble.jsx";
 import OptionItem from "/src/components/OptionItem.jsx";
 import ProgressBar from "/src/components/ProgressBar.jsx";
+import { scoreBus } from "/src/store/scoreBus.js";
 
 const TOTAL = 10;
 
 export default function Quiz() {
-  // ---- Hooks SIEMPRE al tope (orden estable) ----
   const navigate = useNavigate();
 
-  const [mode] = useState(getInitialMode());         // "flag" | "capital" | "region" | ...
-  const [status, setStatus] = useState("loading");   // loading | ready | error
+  // ---- Estado principal ----
+  const [mode] = useState(getInitialMode());      // "flag" | "capital" | "region" | ...
+  const [status, setStatus] = useState("loading");// loading | ready | error
   const [questions, setQuestions] = useState([]);
   const [idx, setIdx] = useState(0);
   const [locked, setLocked] = useState(false);
   const [choice, setChoice] = useState(null);
+
+  // Mantenemos el mapa de respuestas en React para re-render inmediato
+  const [answers, setAnswers] = useState(() => {
+    try { return JSON.parse(sessionStorage.getItem("quiz.answers") || "{}"); }
+    catch { return {}; }
+  });
+
   const cardRef = useRef(null);
 
-  // Carga países y arma el banco de preguntas según modo
+  // ---- Cargar países y preparar ronda ----
   useEffect(() => {
     (async () => {
       try {
@@ -31,8 +39,17 @@ export default function Quiz() {
           ? await fetchCountriesLight()
           : await fetchCountries();
 
-        const qb = buildByType(countries, mode, TOTAL);
+        const qb = buildByType(countries, mode, TOTAL); // [{id, prompt, options, answer, flagUrl?}, ...]
         setQuestions(qb);
+
+        // Guardar contexto de la ronda (IDs + modo + total) para Results/score
+        const round = { mode, ids: qb.map(q => q.id), total: TOTAL };
+        sessionStorage.setItem("quiz.round", JSON.stringify(round));
+        sessionStorage.setItem("quiz.total", String(TOTAL));
+
+        // Avisar a la UI (copa) que hay nueva ronda / score 0
+        scoreBus.dispatchEvent(new Event("score"));
+
         setStatus("ready");
         setIdx(0);
         setLocked(false);
@@ -44,29 +61,42 @@ export default function Quiz() {
     })();
   }, [mode]);
 
-  // Respuestas previamente guardadas en esta sesión
-  const answeredMap = useMemo(() => {
-    const raw = sessionStorage.getItem("quiz.answers");
-    return raw ? JSON.parse(raw) : {};
-  }, []);
+  // IDs de las preguntas de ESTA ronda (derivado)
+  const questionIds = useMemo(() => questions.map(q => q.id), [questions]);
 
-  // Restaurar estado al cambiar de pregunta
+  // ¿Cuántas respondidas en ESTA ronda y modo?
+  const answeredCount = useMemo(() => {
+    let count = 0;
+    for (const qid of questionIds) {
+      const a = answers[qid];
+      if (a && a.mode === mode) count++;
+    }
+    return count;
+  }, [answers, questionIds, mode]);
+
+  // ---- Restaurar estado al cambiar de pregunta ----
   useEffect(() => {
     if (status !== "ready" || !questions[idx]) return;
     const q = questions[idx];
-    const saved = answeredMap[q.id];
+    const saved = answers[q.id];
     if (saved) { setChoice(saved.choice); setLocked(true); }
     else { setChoice(null); setLocked(false); }
 
-    // focus + scroll suave a la tarjeta
+    // Accesibilidad + scroll
     requestAnimationFrame(() => {
       cardRef.current?.focus({ preventScroll: true });
       cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idx, status, questions]);
+  }, [idx, status, questions, answers]);
 
-  // Navegación por teclado (izq/der)
+  // ---- Autofinalizar cuando completes la ronda ----
+  useEffect(() => {
+    if (status === "ready" && answeredCount >= TOTAL) {
+      navigate("/results", { replace: true });
+    }
+  }, [answeredCount, status, navigate]);
+
+  // ---- Navegación por teclado (opcional) ----
   useEffect(() => {
     function onKey(e) {
       if (e.key === "ArrowRight") setIdx(i => Math.min(TOTAL - 1, i + 1));
@@ -76,16 +106,36 @@ export default function Quiz() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // ---- Lógica de respuesta ----
+  // ---- Persistencia y puntaje de la ronda ----
   function persistAnswer(qid, userChoice, correct) {
-    const current = JSON.parse(sessionStorage.getItem("quiz.answers") || "{}");
-    current[qid] = { choice: userChoice, correct, mode };
-    sessionStorage.setItem("quiz.answers", JSON.stringify(current));
-    const score = Object.values(current).filter(a => a.correct && a.mode === mode).length;
+    // 1) Actualiza mapa en memoria y sessionStorage
+    const next = {
+      ...answers,
+      [qid]: { choice: userChoice, correct, mode },
+    };
+    setAnswers(next);
+    sessionStorage.setItem("quiz.answers", JSON.stringify(next));
+
+    // 2) Lee contexto de ronda
+    const round = JSON.parse(sessionStorage.getItem("quiz.round") || "{}");
+    const ids = Array.isArray(round.ids) ? round.ids : [];
+
+    // 3) Calcula score SOLO con las preguntas de ESTA ronda y modo
+    let score = 0;
+    for (const id of ids) {
+      const a = next[id];
+      if (a && a.correct && a.mode === mode) score++;
+    }
+
+    // 4) Persiste score/total para Results y header
     sessionStorage.setItem("quiz.score", String(score));
-    window.dispatchEvent(new Event("storage"));
+    sessionStorage.setItem("quiz.total", String(round.total || ids.length || TOTAL));
+
+    // 5) 🔔 avisa al header (y a quien use el hook) que el score cambió
+    scoreBus.dispatchEvent(new Event("score"));
   }
 
+  // ---- Selección de opción ----
   function pick(opt) {
     if (locked) return;
     const q = questions[idx];
@@ -95,22 +145,27 @@ export default function Quiz() {
     persistAnswer(q.id, opt, correct);
   }
 
-  function stateFor(opt) {
-    const q = questions[idx];
-    if (!locked) return (opt === choice ? "selected" : "idle");
-    if (opt === q.answer) return "correct";
-    if (opt === choice && opt !== q.answer) return "wrong";
-    return "idle";
+  // ---- Estado visual por opción ----
+  // Reemplaza tu stateFor por este:
+function stateFor(opt) {
+  const q = questions[idx];
+
+  // Antes de bloquear: solo "selected" si coincide
+  if (!locked) return opt === choice ? "selected" : "idle";
+
+  // Ya bloqueado: conservamos "selected" en lo que el usuario marcó
+  if (opt === q.answer) {
+    // Correcta (si además la eligió, queda "correct selected")
+    return (opt === choice) ? "correct selected" : "correct";
   }
+  if (opt === choice && opt !== q.answer) {
+    // Elegida pero incorrecta → "wrong selected"
+    return "wrong selected";
+  }
+  return "idle";
+}
 
-  const canPrev = idx > 0;
-  const canNext = idx < TOTAL - 1;
-  const go    = (i) => setIdx(i);
-  const next  = () => canNext && setIdx(idx + 1);
-  const prev  = () => canPrev && setIdx(idx - 1);
-  const finish = () => navigate("/results"); // ← SPA: sin recargar
-
-  // ---- Contenido condicional (sin returns antes de hooks) ----
+  // ---- Render condicional sin romper orden de hooks ----
   let content = null;
 
   if (status === "loading") {
@@ -128,7 +183,7 @@ export default function Quiz() {
           tabIndex={-1}
           aria-labelledby="quiz-question-title"
         >
-          {/* Modo actual (arriba a la derecha) */}
+          {/* Modo actual */}
           <div className="muted" style={{ textAlign: "right", marginBottom: 6 }}>
             Modo: <strong>{labelForMode(mode)}</strong>
           </div>
@@ -136,7 +191,7 @@ export default function Quiz() {
           {/* Burbujas 1–10 */}
           <div className="bubbles" aria-label="Navegación de preguntas">
             {Array.from({ length: TOTAL }).map((_, i) => (
-              <Bubble key={i} number={i + 1} active={i === idx} onClick={() => go(i)} />
+              <Bubble key={i} number={i + 1} active={i === idx} onClick={() => setIdx(i)} />
             ))}
           </div>
 
@@ -158,10 +213,10 @@ export default function Quiz() {
             </div>
           )}
 
-          {/* Progreso */}
+          {/* Progreso: respondidas / TOTAL */}
           <div className="quiz-toprow">
             <div className="spacer" />
-            <ProgressBar value={idx + 1} max={TOTAL} />
+            <ProgressBar value={answeredCount} max={TOTAL} />
             <div className="spacer" />
           </div>
 
@@ -170,8 +225,8 @@ export default function Quiz() {
             {q.options.map((opt) => (
               <OptionItem
                 key={opt}
-                label={opt}           // si tu OptionItem usa 'label'
-                text={opt}            // o 'text'; deja ambos para compatibilidad
+                label={opt}
+                text={opt}            // dejamos ambas props por compatibilidad
                 state={stateFor(opt)} // 'idle' | 'selected' | 'correct' | 'wrong'
                 disabled={locked}
                 onClick={() => pick(opt)}
@@ -179,22 +234,11 @@ export default function Quiz() {
             ))}
           </div>
         </div>
-
-        {/* Acciones inferiores */}
-        <div className="quiz-actions" aria-label="Controles de navegación">
-          <button className="btn" onClick={prev} disabled={!canPrev}>Anterior</button>
-          <button className="btn" onClick={next} disabled={!canNext}>Siguiente</button>
-          <button className="btn" onClick={finish}>Finalizar</button>
-        </div>
       </>
     );
   }
 
-  return (
-    <section className="quiz-wrap">
-      {content}
-    </section>
-  );
+  return <section className="quiz-wrap">{content}</section>;
 }
 
 function labelForMode(mode) {
@@ -207,6 +251,3 @@ function labelForMode(mode) {
     default:         return mode;
   }
 }
-
-
-
