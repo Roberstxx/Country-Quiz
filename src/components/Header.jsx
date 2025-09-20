@@ -1,14 +1,19 @@
-import { Link, useLocation } from "react-router-dom";
-import ScorePill from "/src/components/ScorePill.jsx";
+// src/components/Header.jsx
+import { Link } from "react-router-dom";
+import { useRoundScore } from "/src/hooks/useRoundScore.js";
 
 export default function Header(){
-  const loc = useLocation();
-  const showScore = loc.pathname === "/quiz" || loc.pathname === "/results";
+  const { score, total } = useRoundScore(); // ← reactivo
+
   return (
     <header className="header">
       <div className="container row space-between center">
         <Link to="/" className="brand">Country Quiz</Link>
-        {showScore && <ScorePill />}
+
+        {/* Pastilla con la copa + score */}
+        <div className="score-pill" aria-live="polite">
+          🏆 {score} / {total}
+        </div>
       </div>
     </header>
   );
