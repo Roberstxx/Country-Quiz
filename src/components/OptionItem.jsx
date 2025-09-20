@@ -3,29 +3,40 @@ import CrossIcon from "../assets/icons/cross.svg";
 
 export default function OptionItem({
   text,
-  state = "idle", // "idle" | "selected" | "correct" | "wrong"
+  label,                  // opcional: por compatibilidad con llamadas previas
+  state = "idle",          // puede venir "idle", "selected", "correct", "wrong",
+                           // o combinaciones: "correct selected", "wrong selected"
   onClick,
   disabled = false,
 }) {
-  const showBadge = state === "correct" || state === "wrong";
-  const badgeIcon = state === "correct" ? CheckIcon : CrossIcon;
+  const s = String(state || "idle");
+
+  // Estados derivados (acepta combinaciones)
+  const isSelected = s.includes("selected");
+  const isCorrect  = s.includes("correct");
+  const isWrong    = s.includes("wrong");
+
+  // ¿Mostramos badge?
+  const showBadge  = isCorrect || isWrong;
+  const badgeIcon  = isCorrect ? CheckIcon : CrossIcon;
+
+  // aria-checked: marcada si el usuario la eligió (selected) o si es la correcta
+  const ariaChecked = isSelected || isCorrect;
 
   return (
     <button
       type="button"
-      className={`option ${state !== "idle" ? state : ""}`}
+      className={`option ${s !== "idle" ? s : ""}`}
       onClick={onClick}
       disabled={disabled}
       role="radio"
-      aria-checked={state === "selected" || state === "correct"}
+      aria-checked={ariaChecked}
     >
-      <span className="option__label">{text}</span>
+      <span className="option__label">{text ?? label}</span>
 
       {showBadge && (
         <span
-          className={`option__badge ${
-            state === "correct" ? "is-correct" : "is-wrong"
-          }`}
+          className={`option__badge ${isCorrect ? "is-correct" : "is-wrong"}`}
           aria-hidden="true"
         >
           <img src={badgeIcon} alt="" />
@@ -34,3 +45,4 @@ export default function OptionItem({
     </button>
   );
 }
+
