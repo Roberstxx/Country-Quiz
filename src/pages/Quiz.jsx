@@ -1,5 +1,12 @@
 // src/pages/Quiz.jsx
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchCountries, fetchCountriesLight } from "/src/services/countriesApi.js";
 import { buildByType } from "/src/services/questionBuilder.js";
@@ -7,8 +14,7 @@ import { getInitialMode } from "/src/utils/modes.js";
 
 import Bubble from "/src/components/Bubble.jsx";
 import OptionItem from "/src/components/OptionItem.jsx";
-// (Progreso eliminado)
-// import ProgressBar from "/src/components/ProgressBar.jsx";
+// Progreso eliminado
 import { scoreBus } from "/src/store/scoreBus.js";
 
 const TOTAL = 10;
@@ -199,16 +205,23 @@ export default function Quiz() {
           Modo: <strong>{labelForMode(mode)}</strong>
         </div>
 
-        {/* Burbujas 1–10 */}
+        {/* Burbujas 1–10 con "answered" */}
         <div className="bubbles" aria-label="Navegación de preguntas">
-          {Array.from({ length: TOTAL }).map((_, i) => (
-            <Bubble
-              key={i}
-              number={i + 1}
-              active={i === idx}
-              onClick={() => goto(i)}
-            />
-          ))}
+          {Array.from({ length: TOTAL }).map((_, i) => {
+            const qid = questionIds[i];
+            const saved = answers[qid];
+            const answered = !!saved && saved.mode === mode;
+
+            return (
+              <Bubble
+                key={i}
+                number={i + 1}
+                active={i === idx}
+                answered={answered}
+                onClick={() => goto(i)}
+              />
+            );
+          })}
         </div>
 
         {/* Enunciado */}
