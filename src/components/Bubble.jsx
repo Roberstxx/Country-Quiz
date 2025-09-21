@@ -1,12 +1,22 @@
-export default function Bubble({ number, active=false, onClick }){
-  return (
+// src/components/Bubble.jsx
+export default function Bubble({ number, active = false, answered = false, onClick }) {
+  const cls =
+    "bubble" +
+    (active ? " active" : "") +
+    (answered ? " answered" : "");
+
+  return {
+    /* button to navigate between questions */
+  } && (
     <button
       type="button"
-      className={`bubble ${active ? "active" : ""}`}
+      className={cls}
       onClick={onClick}
-      aria-current={active ? "page" : undefined}
+      aria-pressed={active}
+      aria-label={`Pregunta ${number}${active ? " (actual)" : ""}${answered ? " (respondida)" : ""}`}
     >
       {number}
     </button>
   );
 }
+
