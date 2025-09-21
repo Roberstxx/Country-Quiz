@@ -1,14 +1,11 @@
 /* =========================================================
-   COMPONENTS.CSS — UI del Quiz
-   - Card, formularios, botones genéricos (.btn)
-   - Burbujas de navegación (1..10) con layout responsive
+   COMPONENTS.CSS — UI del Quiz (limpio)
+   - Card, formularios, botones
+   - Burbujas de navegación (1..10)
    - Opciones con estados + badge (✅/❌)
-   - Barra de Progreso centrada y adaptable
-   - Extras Results + (Intro opcional)
-   ---------------------------------------------------------
-   
-   ========================================================= */
-
+   - Resultados
+   - Header/score-pill ajustados (encimita y más grandes)
+   --------------------------------------------------------- */
 
 /* ===== Card y contenedores ===== */
 .card{
@@ -17,21 +14,20 @@
   padding: 32px;
   box-shadow: var(--shadow-1);
 }
-.intro{                 /* Puedes eliminar si no usas Intro */
-  display: grid;
-  place-items: center;
-  min-height: calc(100vh - 120px);
-}
+
 .quiz-wrap{
   max-width: 980px;
   margin: 0 auto;
   padding: 24px;
 }
+
+/* Reducimos la separación del card para que quede cerca del header */
 .quiz-card{
-  margin: 24px auto;
+  margin: 12px auto 24px;   /* antes 24px auto */
   padding: 40px 36px;
-  max-width: 880px;     /* Mantén coordinado con layout del contenedor */
+  max-width: 880px;
 }
+
 .results{
   display: grid;
   place-items: center;
@@ -41,7 +37,6 @@
   text-align: center;
   max-width: 560px;
 }
-
 
 /* ===== Form ===== */
 .label{
@@ -67,8 +62,7 @@
   border-color: #8f95ff;
 }
 
-
-/* ===== Botones genéricos (se usan en Results) ===== */
+/* ===== Botones genéricos (se usan también en Results) ===== */
 .btn{
   display: inline-block;
   border: none;
@@ -85,35 +79,46 @@
 .btn:active{ transform: translateY(0); }
 .btn:disabled{ opacity: .6; cursor: not-allowed; }
 
-
-/* ===== Pill de puntaje ===== */
+/* ===== Pill de puntaje (más grande) ===== */
 .score-pill{
   background: var(--grad);
   color: #fff;
-  padding: 8px 14px;
+  padding: 10px 16px;      /* más relleno */
   border-radius: 999px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;         /* más grande */
+  font-weight: 700;
   box-shadow: var(--shadow-2);
 }
+@media (min-width: 768px){
+  .score-pill{ font-size: 18px; }
+}
 
+/* ===== Header encimita y tipografía mayor ===== */
+.header{
+  padding: calc(8px + var(--safe-top)) 0 8px; /* menos alto, queda pegado al card */
+}
+.header .brand{
+  font-weight: 800;
+  font-size: clamp(26px, 4.5vw, 34px); /* título más grande */
+  text-decoration: none;
+  color: var(--text);
+}
 
-/* ===== Burbujas originales ===== */
-.bubbles {
+/* ===== Burbujas (1..10) ===== */
+.bubbles{
   display: flex;
-  flex-wrap: wrap;         /* permite que bajen de línea en pantallas pequeñas */
-  justify-content: center; /* centradas */
+  flex-wrap: wrap;          /* bajan de línea en pantallas pequeñas */
+  justify-content: center;  /* centradas */
   gap: 12px;
   margin-bottom: 22px;
 }
-
-.bubble {
+.bubble{
   width: 40px;
   height: 40px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: var(--opt);  /* color neutro */
+  background: var(--opt);
   color: #fff;
   font-size: 14px;
   font-weight: 600;
@@ -121,31 +126,25 @@
   transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
   border: #1f2449;
 }
-
-.bubble:hover {
+.bubble:hover{
   transform: translateY(-2px);
   opacity: 1;
 }
-
-.bubble.active {
-  background: var(--grad);     /* gradiente activo */
+.bubble.active{
+  background: var(--grad);
   font-weight: 700;
-  box-shadow: var(--shadow-2); /* sombra para resaltar */
+  box-shadow: var(--shadow-2);
   transform: translateY(-2px);
   border: #1f2449;
 }
-
 /* Responsive: en pantallas muy chicas se achican */
-@media (max-width: 480px) {
-  .bubble {
+@media (max-width: 480px){
+  .bubble{
     width: 32px;
     height: 32px;
     font-size: 12px;
   }
 }
-
-
-
 
 /* ===== Opciones ===== */
 .options{
@@ -158,9 +157,13 @@
   .options{ grid-template-columns: 1fr; }
 }
 .option{
+  position: relative;       /* para el badge */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 18px 56px 18px 20px; /* espacio a la derecha para el badge */
   background: var(--opt);
   border-radius: 16px;
-  padding: 18px 20px;
   border: 2px solid transparent;
   cursor: pointer;
   text-align: center;
@@ -175,83 +178,17 @@
   box-shadow: none;
 }
 .option:hover{ background: var(--opt-hover); transform: translateY(-1px); }
-.option.selected{ background: var(--grad); color: #fff; box-shadow: var(--shadow-2); }
+.option.selected{
+  background: var(--grad);
+  color: #fff;
+  box-shadow: var(--shadow-2);
+}
 .option.correct{ border-color: var(--success); }
 .option.wrong{ border-color: var(--error); }
+.option.selected:disabled{ opacity: 1; } /* no atenuar la seleccionada */
 .option:disabled{ opacity: .8; cursor: not-allowed; }
 
-
-/* ===== Progreso (centrado y adaptable) ===== */
-.quiz-toprow{
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin: 12px 0 24px;
-  justify-items: center;
-}
-@media (min-width: 600px){
-  .quiz-toprow{ grid-template-columns: 1fr minmax(240px, 520px) 1fr; }
-}
-.progress{
-  width: 100%;
-  max-width: 520px;
-  height: 8px;
-  background: #2f3464;
-  border-radius: 999px;
-  overflow: hidden;
-  margin-inline: auto;       /* centrada */
-}
-.progress-fill{ height: 100%; background: var(--grad); }
-
-
-/* ===== Result hero ===== */
-.result-hero{
-  width: 72px; height: 72px;
-  border-radius: 50%;
-  background: #FFECC8;
-  display: grid; place-items: center;
-  margin: 0 auto 12px;
-  font-size: 32px;
-}
-
-
-/* ===== Intro (opcional) ===== */
-.intro .card{
-  max-width: 560px;
-  padding: 36px 32px;
-  border-radius: 18px;
-}
-.intro .btn{
-  display: block;
-  margin: 0 auto;
-}
-
-
-/* ===== Footer ===== */
-.footer .container{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-
-/* ===== Badge de feedback (✅ / ❌) para opciones =====
-   - Se muestra cuando el estado es .correct o .wrong
-   - Usar junto con OptionItem.jsx que inserta <span class="option__badge"><img .../></span>
-*/
-.option{
-  position: relative;
-  display: flex;            /* etiqueta y badge en el mismo eje */
-  justify-content: center;
-  align-items: center;
-  padding-right: 56px;      /* espacio para el badge a la derecha */
-}
 .option__label{ pointer-events: none; }
-
-/* Si prefieres SOLO iconos, sin color de borde: descomenta esto*/
-.option.correct,
-.option.wrong{ border-color: transparent; }
-
 
 /* Badge circular (contenedor del SVG) */
 .option__badge{
@@ -260,7 +197,7 @@
   width: 28px; height: 28px;
   border-radius: 50%;
   display: grid; place-items: center;
-  /* Puedes añadir sombra/fondo si quieres más contraste:
+  /* Si quieres más contraste, puedes activar:
   box-shadow: var(--shadow-2);
   background: rgba(0,0,0,.25);
   border: 2px solid rgba(255,255,255,.35);
@@ -277,23 +214,13 @@
   .option__badge img{ width: 15px; height: 15px; }
 }
 
-
 /* Mantener el gradiente morado cuando está seleccionada */
-.option.selected{
-  background: var(--grad);
-  color:#fff;
-  box-shadow: var(--shadow-2);
-}
-
-/* Si además es correcta/incorrecta, solo borde cambia;
-   el fondo morado se conserva */
 .option.correct.selected{ border-color: var(--success); }
 .option.wrong.selected{   border-color: var(--error);   }
 
-/* Evitar que el :disabled atenúe la opción seleccionada */
-.option.selected:disabled{ opacity: 1; }
-
-
-
-
-.option:disabled{ opacity:.8; cursor:not-allowed; }
+/* ===== Footer ===== */
+.footer .container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
