@@ -23,9 +23,11 @@
 
 /* Reducimos la separación del card para que quede cerca del header */
 .quiz-card{
-  margin: 12px auto 24px;   /* antes 24px auto */
+  margin: 12px auto 24px;
   padding: 40px 36px;
   max-width: 880px;
+  content-visibility: auto;
+  contain-intrinsic-size: 600px;
 }
 
 .results{
@@ -62,7 +64,7 @@
   border-color: #8f95ff;
 }
 
-/* ===== Botones genéricos (se usan también en Results) ===== */
+/* ===== Botones genéricos ===== */
 .btn{
   display: inline-block;
   border: none;
@@ -83,9 +85,9 @@
 .score-pill{
   background: var(--grad);
   color: #fff;
-  padding: 10px 16px;      /* más relleno */
+  padding: 10px 16px;
   border-radius: 999px;
-  font-size: 16px;         /* más grande */
+  font-size: 16px;
   font-weight: 700;
   box-shadow: var(--shadow-2);
 }
@@ -95,11 +97,11 @@
 
 /* ===== Header encimita y tipografía mayor ===== */
 .header{
-  padding: calc(8px + var(--safe-top)) 0 8px; /* menos alto, queda pegado al card */
+  padding: calc(8px + var(--safe-top)) 0 8px;
 }
 .header .brand{
   font-weight: 800;
-  font-size: clamp(26px, 4.5vw, 34px); /* título más grande */
+  font-size: clamp(26px, 4.5vw, 34px);
   text-decoration: none;
   color: var(--text);
 }
@@ -107,8 +109,8 @@
 /* ===== Burbujas (1..10) ===== */
 .bubbles{
   display: flex;
-  flex-wrap: wrap;          /* bajan de línea en pantallas pequeñas */
-  justify-content: center;  /* centradas */
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
   margin-bottom: 22px;
 }
@@ -123,12 +125,11 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+  transition: transform .12s ease, background .12s ease, box-shadow .12s ease, opacity .12s ease;
   border: #1f2449;
 }
 .bubble:hover{
   transform: translateY(-2px);
-  opacity: 1;
 }
 .bubble.active{
   background: var(--grad);
@@ -137,7 +138,13 @@
   transform: translateY(-2px);
   border: #1f2449;
 }
-/* Responsive: en pantallas muy chicas se achican */
+/* NUEVO: pintada cuando ya está respondida */
+.bubble.answered{
+  background: var(--grad);
+  color: #fff;
+  box-shadow: var(--shadow-2);
+  transform: translateY(-2px);
+}
 @media (max-width: 480px){
   .bubble{
     width: 32px;
@@ -157,7 +164,7 @@
   .options{ grid-template-columns: 1fr; }
 }
 .option{
-  position: relative;       /* para el badge */
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -185,7 +192,7 @@
 }
 .option.correct{ border-color: var(--success); }
 .option.wrong{ border-color: var(--error); }
-.option.selected:disabled{ opacity: 1; } /* no atenuar la seleccionada */
+.option.selected:disabled{ opacity: 1; }
 .option:disabled{ opacity: .8; cursor: not-allowed; }
 
 .option__label{ pointer-events: none; }
@@ -197,17 +204,11 @@
   width: 28px; height: 28px;
   border-radius: 50%;
   display: grid; place-items: center;
-  /* Si quieres más contraste, puedes activar:
-  box-shadow: var(--shadow-2);
-  background: rgba(0,0,0,.25);
-  border: 2px solid rgba(255,255,255,.35);
-  */
 }
 .option__badge img{
   width: 16px; height: 16px; display: block;
 }
 
-/* Ajuste móvil para que no tape el texto */
 @media (max-width: 420px){
   .option{ padding-right: 48px; }
   .option__badge{ right: 12px; width: 26px; height: 26px; }
