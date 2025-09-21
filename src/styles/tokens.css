@@ -1,3 +1,6 @@
+
+/** tokens.css */
+
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
 
 :root{
@@ -22,3 +25,4 @@
   /* Gradiente primario */
   --grad: linear-gradient(90deg, #E65895 0%, #BC6BE8 100%);
 }
+
