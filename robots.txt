@@ -1,13 +1,7 @@
 # robots.txt para Country Quiz
-# Indica a los bots cómo indexar tu sitio en Vercel
-
+# Permite a todos los rastreadores acceder e indexar el sitio
 User-agent: *
 Allow: /
 
-# Evitar indexación de carpetas internas del código
-Disallow: /src/
-Disallow: /assets/
-Disallow: /node_modules/
-
-# Enlaza tu sitemap para un mejor SEO
+# Sitemap para mejorar SEO
 Sitemap: https://country-quiz-pink.vercel.app/sitemap.xml
