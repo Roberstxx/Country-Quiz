@@ -4,7 +4,7 @@
    - Burbujas de navegación (1..10)
    - Opciones con estados + badge (✅/❌)
    - Resultados
-   - Header/score-pill ajustados (encimita y más grandes)
+   - Header / score-pill ajustados (encimita y más grandes)
    --------------------------------------------------------- */
 
 /* ===== Card y contenedores ===== */
@@ -15,13 +15,13 @@
   box-shadow: var(--shadow-1);
 }
 
-/* Contenedor general del quiz */
+/* Contenedor general del quiz (centrado horizontal, arriba en vertical) */
 .quiz-wrap{
   display: flex;
   justify-content: center;      /* centra horizontal */
   align-items: flex-start;      /* comienza arriba (mock) */
-  min-height: calc(100vh - 96px);
-  padding: 12px 20px 24px;      /* menos aire arriba */
+  min-height: calc(100vh - 96px); /* viewport menos header/footer aprox */
+  padding: 12px 20px 24px;      /* poco aire arriba */
   box-sizing: border-box;
 }
 
@@ -37,20 +37,10 @@
 .quiz-card{
   margin: 8px auto 24px;
   padding: 38px 40px;
-  max-width: 980px;             /* << más ancho en desktop */
+  max-width: 980px;             /* más ancho en desktop */
   width: 100%;
   content-visibility: auto;
   contain-intrinsic-size: 600px;
-}
-
-.results{
-  display: grid;
-  place-items: center;
-  min-height: calc(100vh - 120px);
-}
-.results-card{
-  text-align: center;
-  max-width: 560px;
 }
 
 /* ===== Form ===== */
@@ -94,7 +84,7 @@
 .btn:active{ transform: translateY(0); }
 .btn:disabled{ opacity: .6; cursor: not-allowed; }
 
-/* ===== Pill de puntaje (más grande) ===== */
+/* ===== Pill de puntaje ===== */
 .score-pill{
   background: var(--grad);
   color: #fff;
@@ -112,6 +102,8 @@
 .header{
   padding: calc(8px + var(--safe-top)) 0 4px;  /* pegado */
   margin-bottom: 8px;                          /* separación mínima al card */
+  position: relative;
+  z-index: 1;                                   /* evita que la sombra del card lo tape */
 }
 .header .brand{
   font-weight: 800;
@@ -139,8 +131,11 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform .12s ease, background .12s ease, box-shadow .12s ease, opacity .12s ease;
-  border: #1f2449;
+  transition:
+    transform .12s ease,
+    background .12s ease,
+    box-shadow .12s ease,
+    opacity .12s ease;
 }
 .bubble:hover{ transform: translateY(-2px); }
 .bubble.active{
@@ -148,7 +143,6 @@
   font-weight: 700;
   box-shadow: var(--shadow-2);
   transform: translateY(-2px);
-  border: #1f2449;
 }
 /* pintada cuando ya está respondida */
 .bubble.answered{
@@ -291,7 +285,6 @@
   padding: 14px 18px;
 }
 
-
 /* ===== Responsivo del card amplio ===== */
 @media (max-width: 1024px){
   .quiz-card{ max-width: 920px; padding: 34px 28px; }
@@ -302,5 +295,3 @@
 @media (max-width: 480px){
   .quiz-card{ padding: 24px 16px; }
 }
-
-
