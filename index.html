@@ -1,123 +1,78 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Básico -->
+  <title>World Quiz 🌍 | Juego Interactivo de Países, Banderas y Capitales</title>
+  <meta name="description" content="Pon a prueba tus conocimientos de geografía con World Quiz. Adivina banderas, capitales y regiones del mundo en un divertido juego educativo." />
+  <meta name="keywords" content="world quiz, geografía, juego educativo, banderas, capitales, países, trivias, aprendizaje" />
+  <meta name="author" content="World Quiz Team" />
+  <meta name="robots" content="index, follow" />
+  <meta name="geo.region" content="MX" />
+  <meta name="geo.placename" content="México" />
 
-    <!-- Viewport -->
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+  <!-- Open Graph / WhatsApp / Facebook -->
+  <meta property="og:title" content="World Quiz 🌍 | Juego Interactivo de Países, Banderas y Capitales" />
+  <meta property="og:description" content="Pon a prueba tus conocimientos de geografía adivinando banderas, capitales y países. ¡Demuestra que eres un experto en el mundo!" />
+  <meta property="og:image" content="https://country-quiz-pink.vercel.app/og.png?v=5" />
+  <meta property="og:url" content="https://country-quiz-pink.vercel.app/quiz" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_MX" />
 
-    <!-- Title & Description -->
-    <title>World Quiz - Juego interactivo de países 🌍</title>
-    <meta
-      name="description"
-      content="World Quiz es una aplicación interactiva donde pondrás a prueba tus conocimientos sobre países, banderas, capitales y regiones del mundo."
-    />
+  <!-- Favicon e Iconos (en raíz) -->
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- SEO Keywords -->
-    <meta
-      name="keywords"
-      content="quiz, países, banderas, capitales, regiones, juego educativo, geografía, world quiz"
-    />
+  <!-- Iconos adicionales PWA -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/web-app-manifest-192x192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/web-app-manifest-512x512.png" />
 
-    <!-- Author -->
-    <meta name="author" content="World Quiz Team" />
+  <!-- Twitter Card -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://country-quiz-pink.vercel.app/quiz">
+  <meta property="twitter:title" content="World Quiz 🌍">
+  <meta property="twitter:description" content="Pon a prueba tu conocimiento en geografía con banderas, capitales y regiones del mundo.">
+  <meta property="twitter:image" content="https://country-quiz-pink.vercel.app/og.png?v=5">
 
-    <!-- Robots (indexación) -->
-    <meta name="robots" content="index, follow" />
+  <!-- Theme / PWA -->
+  <meta name="theme-color" content="#393F6E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
 
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://country-quiz-pink.vercel.app/quiz" />
+  <!-- Schema.org para SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "World Quiz",
+    "url": "https://country-quiz-pink.vercel.app/quiz",
+    "image": "https://country-quiz-pink.vercel.app/og.png",
+    "author": {
+      "@type": "Organization",
+      "name": "World Quiz Team"
+    },
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "description": "Juego interactivo para aprender geografía a través de preguntas sobre países, banderas y capitales."
+  }
+  </script>
 
-    <!-- Manifest -->
-    <link rel="manifest" href="/site.webmanifest" />
+  <!-- Fuentes y estilos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
 
-    <!-- Favicons y App Icons -->
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
-    <link
-      rel="icon"
-      href="/web-app-manifest-192x192.png"
-      type="image/png"
-      sizes="192x192"
-    />
-    <link
-      rel="icon"
-      href="/web-app-manifest-512x512.png"
-      type="image/png"
-      sizes="512x512"
-    />
-
-    <!-- ====================== -->
-    <!-- OPEN GRAPH / WHATSAPP -->
-    <!-- ====================== -->
-    <meta property="og:site_name" content="World Quiz" />
-    <meta property="og:locale" content="es_MX" />
-    <meta
-      property="og:title"
-      content="World Quiz 🌍 - Juego interactivo de países"
-    />
-    <meta
-      property="og:description"
-      content="Pon a prueba tu conocimiento de geografía con banderas, capitales y regiones."
-    />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://country-quiz-pink.vercel.app/quiz"
-    />
-    <meta
-      property="og:image"
-      content="https://country-quiz-pink.vercel.app/og.png?v=4"
-    />
-    <meta
-      property="og:image:secure_url"
-      content="https://country-quiz-pink.vercel.app/og.png?v=4"
-    />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-
-    <!-- ================== -->
-    <!-- TWITTER / X CARDS -->
-    <!-- ================== -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@worldquiz" />
-    <meta name="twitter:creator" content="@worldquiz" />
-    <meta name="twitter:title" content="World Quiz 🌍" />
-    <meta
-      name="twitter:description"
-      content="Juego educativo sobre países, banderas y capitales del mundo."
-    />
-    <meta
-      name="twitter:image"
-      content="https://country-quiz-pink.vercel.app/og.png?v=4"
-    />
-
-    <!-- PWA / Mobile -->
-    <meta name="theme-color" content="#393F6E" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
-
-    <!-- Preloads y fuentes -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 </html>
+
 
