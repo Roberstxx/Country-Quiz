@@ -27,6 +27,9 @@ body {
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* Agrega esta línea para esconder la barra vertical */
+  overflow-y: hidden;
 }
 
 /* ===== Layout genérico ===== */
@@ -206,3 +209,4 @@ body::before {
 html {
   background-color: #1f2449;
 }
+
