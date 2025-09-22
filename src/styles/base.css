@@ -143,8 +143,8 @@ html::before{
   z-index: -1;
   background:
     image-set(
-      url("/src/assets/bg.avif") type("image/avif"),
-      url("/src/assets/bg.webp") type("image/webp"),
+      url("/src/assets/bg.jpg") type("image/jpeg"),
+      url("/src/assets/bg.jpg") type("image/jpeg"),
       url("/src/assets/bg.jpg")  type("image/jpeg")
     );
   background-repeat: no-repeat;
@@ -160,4 +160,5 @@ html::before{
     position: absolute;       /* se estira con la página */
   }
 }
+
 
