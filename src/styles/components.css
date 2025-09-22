@@ -28,17 +28,6 @@
   max-width: 880px;
 }
 
-.results {
-  display: grid;
-  place-items: center;
-  min-height: calc(100vh - 120px);
-}
-.results-card {
-  text-align: center;
-  max-width: 560px;
-}
-
-
 /* ===== Form ===== */
 .label{
   display: grid;
@@ -226,5 +215,58 @@
   align-items: center;
 }
 
+/* =========================================================
+   RESULTADOS — reemplazo por el estilo actual
+   (card angosta centrada, imagen arriba, títulos y botón)
+   ========================================================= */
+.results{
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 120px);
+  padding: 24px;
+}
 
+.results-card--narrow{
+  max-width: 440px;           /* card angosta */
+  width: 100%;
+  padding: 36px 28px 32px;
+  text-align: center;
+  border-radius: 18px;
+  box-shadow: var(--shadow-1);
+}
 
+/* Imagen / confetti arriba */
+.result-hero{
+  display: grid;
+  place-items: center;
+  margin-bottom: 10px;
+}
+.result-hero img{
+  width: 350px;               /* ajusta a gusto */
+  height: auto;
+  display: block;
+}
+
+/* Títulos centrados */
+.results-title{
+  font-size: clamp(20px, 3.6vw, 28px);
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--text);
+  margin: 8px 0 6px;
+}
+.results-subtitle{
+  color: var(--muted);
+  font-size: clamp(14px, 2.6vw, 16px);
+  margin: 0 0 22px;
+}
+
+/* Botón ancho y centrado */
+.results-btn{
+  display: block;
+  width: min(320px, 90%);
+  margin: 0 auto;
+  border-radius: 12px;
+  font-weight: 700;
+  padding: 14px 18px;
+}
