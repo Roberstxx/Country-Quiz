@@ -225,9 +225,7 @@ export default function Quiz() {
         </div>
 
         {/* Enunciado */}
-       /* <h2 id="quiz-question-title" className="subtitle center-text m0" style={{ marginBottom: 18 }}>
-          {q.prompt}*/
-        </h2>
+        
 
         {/* Bandera (solo modo “flag”) */}
         {mode === "flag" && q.flagUrl && (
@@ -274,4 +272,5 @@ function labelForMode(mode) {
     default:         return mode;
   }
 }
+
 
