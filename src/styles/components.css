@@ -15,11 +15,24 @@
   box-shadow: var(--shadow-1);
 }
 
-.quiz-wrap{
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 24px;
+/* Contenedor general del quiz */
+.quiz-wrap {
+  display: flex;
+  justify-content: center; /* Centrar horizontal */
+  align-items: center;     /* Centrar vertical */
+  min-height: calc(100vh - 120px); /* Ajuste para header/footer */
+  padding: 20px;
+  box-sizing: border-box;
 }
+
+/* Ajuste para pantallas muy pequeñas */
+@media (max-width: 768px) {
+  .quiz-wrap {
+    align-items: flex-start; /* En móvil empieza arriba para evitar problemas */
+    padding-top: 40px;
+  }
+}
+
 
 /* Reducimos la separación del card para que quede cerca del header */
 .quiz-card{
@@ -280,6 +293,7 @@
   font-weight: 700;
   padding: 14px 18px;
 }
+
 
 
 
