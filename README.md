@@ -7,14 +7,12 @@ Permite al usuario poner a prueba sus conocimientos sobre banderas, capitales y 
 
 ## 📸 Capturas de pantalla
 
-### Pantalla principal (Intro)
-![Intro Screenshot](./src/assets/screenshots/intro.png)
 
 ### Pantalla de preguntas
-![Quiz Screenshot](./src/assets/screenshots/quiz.png)
+![Quiz Screenshot](./src/assets/quiz.png)
 
 ### Resultados
-![Results Screenshot](./src/assets/screenshots/results.png)
+![Results Screenshot](./src/assets/results.png)
 
 ---
 
