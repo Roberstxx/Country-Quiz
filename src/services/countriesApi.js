@@ -4,13 +4,17 @@
  * Rest Countries base:
  * https://restcountries.com/v3.1/all?fields=...
  *
- * Nota:
- * - Usa "fields" para reducir payload.
- * - Preferimos SVG para banderas (mejor calidad); si no hay, caemos a PNG.
+ * Cambios para inglés:
+ * - Forzamos header "Accept-Language: en,en-US;q=0.9"
+ * - Preferimos translations.eng.common en normalizeCountry
+ * - Desactivamos caché del navegador/CDN (cache: "no-store")
+ * - Añadimos "translations" y "cca2" a fields (IDs estables y preferencia ENG)
+ * - Cache-bust (&v=2) para evitar respuestas viejas
  */
 
 const DEFAULT_FIELDS = [
   "name",
+  "translations", // para preferir ENG si existe
   "cca2",
   "flags",
   "capital",
@@ -20,26 +24,38 @@ const DEFAULT_FIELDS = [
   "languages",
 ];
 
-const LIGHT_FIELDS = ["name", "flags"]; // para el quiz de banderas
+const LIGHT_FIELDS = [
+  "name",
+  "translations", // idem
+  "flags",
+  "cca2",
+]; // para el quiz de banderas (ligero pero con IDs y ENG)
 
 /**
- * Construye la URL con fields.
+ * Construye la URL con fields + cache-bust.
  */
 function buildUrl(fields) {
   const f = Array.isArray(fields) && fields.length ? fields : DEFAULT_FIELDS;
   // Evita espacios, duplicados y ordena para cachés más consistentes
   const unique = [...new Set(f.map((s) => String(s).trim()))].sort();
-  return `https://restcountries.com/v3.1/all?fields=${unique.join(",")}`;
+  // v=2 para forzar recarga si tu ruta intermedia tiene caché
+  return `https://restcountries.com/v3.1/all?fields=${unique.join(",")}&v=2`;
 }
 
 /**
- * Fetch con timeout (AbortController) y manejo de errores.
+ * Fetch con timeout (AbortController), forzando inglés y sin caché.
  */
 async function fetchJson(url, { timeoutMs = 12000 } = {}) {
   const ctrl = new AbortController();
   const id = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    const res = await fetch(url, { signal: ctrl.signal });
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      headers: {
+        "Accept-Language": "en,en-US;q=0.9", // 🔹 fuerza inglés
+      },
+      cache: "no-store", // 🔹 evita cache del navegador/CDN
+    });
     if (!res.ok) {
       throw new Error(`HTTP ${res.status} al consultar ${url}`);
     }
@@ -50,11 +66,13 @@ async function fetchJson(url, { timeoutMs = 12000 } = {}) {
 }
 
 /**
- * Normaliza un país a un shape estable para el quiz.
+ * Normaliza un país a un shape estable para el quiz, preferentemente en inglés.
  */
 function normalizeCountry(c) {
   try {
+    // nombre en inglés priorizando traducción ENG; luego name.common
     const nameCommon =
+      c?.translations?.eng?.common ??
       c?.name?.common ??
       (typeof c?.name === "string" ? c.name : "") ??
       "";
@@ -75,6 +93,7 @@ function normalizeCountry(c) {
             .filter(Boolean)
         : [];
 
+    // Rest Countries devuelve languages como { iso: "English", ... } (en inglés con nuestro header)
     const languages =
       c?.languages
         ? Object.values(c.languages)
@@ -83,7 +102,7 @@ function normalizeCountry(c) {
         : [];
 
     return {
-      id: c?.cca2 ?? nameCommon, // fallback si no hay cca2
+      id: c?.cca2 ?? nameCommon, // id estable (preferimos cca2)
       name: nameCommon,
       capital,
       region: c?.region || "",
@@ -115,7 +134,7 @@ function dedupeAndClean(list) {
 /**
  * API pública:
  * - fetchCountries(): completo (para capital/moneda/idioma/region/flag).
- * - fetchCountriesLight(): ligero (solo nombre + bandera), ideal para quiz de banderas.
+ * - fetchCountriesLight(): ligero (solo nombre + bandera + cca2), ideal para quiz de banderas.
  */
 
 export async function fetchCountries() {
@@ -133,6 +152,7 @@ export async function fetchCountriesLight() {
       normalizeCountry({
         // construimos un objeto mínimo compatible con normalizeCountry
         name: c?.name,
+        translations: c?.translations,
         flags: c?.flags,
         cca2: c?.cca2,
       })
@@ -151,3 +171,5 @@ export function pickRandomCountries(countries, n = 10) {
   }
   return a.slice(0, Math.max(0, Math.min(n, a.length)));
 }
+
+
