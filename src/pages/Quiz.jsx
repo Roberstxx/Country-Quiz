@@ -14,7 +14,6 @@ import { getInitialMode } from "/src/utils/modes.js";
 
 import Bubble from "/src/components/Bubble.jsx";
 import OptionItem from "/src/components/OptionItem.jsx";
-// Progreso eliminado
 import { scoreBus } from "/src/store/scoreBus.js";
 
 const TOTAL = 10;
@@ -182,12 +181,12 @@ export default function Quiz() {
   let content = null;
 
   if (status === "loading") {
-    content = <p className="muted">Cargando preguntas…</p>;
+    content = <p className="muted">Loading questions…</p>;
   } else if (status === "error") {
     content = (
       <div className="center-text">
-        <p className="muted">No se pudo cargar la información.</p>
-        <button className="btn" onClick={() => window.location.reload()}>Reintentar</button>
+        <p className="muted">Could not load data.</p>
+        <button className="btn" onClick={() => window.location.reload()}>Retry</button>
       </div>
     );
   } else if (questions.length) {
@@ -200,13 +199,8 @@ export default function Quiz() {
         tabIndex={-1}
         aria-labelledby="quiz-question-title"
       >
-        {/* Modo actual */}
-        <div className="muted" style={{ textAlign: "right", marginBottom: 6 }}>
-          Modo: <strong>{labelForMode(mode)}</strong>
-        </div>
-
-        {/* Burbujas 1–10 con "answered" */}
-        <div className="bubbles" aria-label="Navegación de preguntas">
+        {/* Burbujas 1–10 (con marca de respondida) */}
+        <div className="bubbles" aria-label="Question navigation">
           {Array.from({ length: TOTAL }).map((_, i) => {
             const qid = questionIds[i];
             const saved = answers[qid];
@@ -225,7 +219,9 @@ export default function Quiz() {
         </div>
 
         {/* Enunciado */}
-        
+        <h2 id="quiz-question-title" className="subtitle center-text m0" style={{ marginBottom: 18 }}>
+          {q.prompt}
+        </h2>
 
         {/* Bandera (solo modo “flag”) */}
         {mode === "flag" && q.flagUrl && (
@@ -243,7 +239,7 @@ export default function Quiz() {
         )}
 
         {/* Opciones */}
-        <div className="options" role="radiogroup" aria-label="Opciones de respuesta">
+        <div className="options" role="radiogroup" aria-label="Answer options">
           {q.options.map((opt) => (
             <OptionItem
               key={opt}
@@ -261,16 +257,3 @@ export default function Quiz() {
 
   return <section className="quiz-wrap">{content}</section>;
 }
-
-function labelForMode(mode) {
-  switch (mode) {
-    case "flag":     return "Banderas";
-    case "capital":  return "Capitales";
-    case "region":   return "Regiones";
-    case "currency": return "Monedas";
-    case "language": return "Idiomas";
-    default:         return mode;
-  }
-}
-
-
