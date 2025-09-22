@@ -1,6 +1,8 @@
 // src/pages/Results.jsx
 import { useNavigate } from "react-router-dom";
 import { computeNextMode, getInitialMode, setNextMode } from "/src/utils/modes.js";
+// Importamos la imagen
+import congratsImg from "/src/assets/congrats.png";
 
 export default function Results() {
   const navigate = useNavigate();
@@ -25,7 +27,14 @@ export default function Results() {
   return (
     <section className="results">
       <div className="card results-card">
-        <div className="result-hero" role="img" aria-label="Confetti">🎉</div>
+        {/* Imagen en lugar del emoji */}
+        <div className="result-hero">
+          <img 
+            src={congratsImg} 
+            alt="Congratulations" 
+            style={{ width: "120px", height: "auto" }} 
+          />
+        </div>
 
         <h2 className="subtitle center-text m0" style={{ marginBottom: 8 }}>
           Congratulations, Player! You finished the quiz.
@@ -42,6 +51,8 @@ export default function Results() {
     </section>
   );
 }
+
+
 
 
 
