@@ -18,9 +18,10 @@
 /* Contenedor general del quiz (Centra el contenido en la pantalla) */
 .quiz-wrap {
   display: flex;
-  justify-content: center;      /* Centra horizontalmente */
-  align-items: center;          /* Centra verticalmente */
-  min-height: calc(100vh - 96px); /* Espacio para que ocupe casi toda la pantalla */
+  flex-direction: column;      /* Apila el header y el card verticalmente */
+  justify-content: center;     /* Centra el bloque del quiz verticalmente */
+  align-items: center;         /* Centra el bloque del quiz horizontalmente */
+  min-height: 100vh;           /* Ocupa toda la altura de la pantalla */
   padding: 12px 20px 24px;
   box-sizing: border-box;
 }
@@ -120,8 +121,8 @@
 
 /* ===== Header encimita y tipografía mayor ===== */
 .header {
-  padding: calc(8px + var(--safe-top)) 0 4px; /* más pegado */
-  margin-bottom: 8px; /* separación mínima al card */
+  padding: 0;                   /* Se elimina el padding para que no empuje el contenido */
+  margin-bottom: 24px;          /* Espacio entre el header y el card, como en la imagen */
 }
 .header .brand {
   font-weight: 800;
