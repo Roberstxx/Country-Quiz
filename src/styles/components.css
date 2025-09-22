@@ -8,64 +8,48 @@
    --------------------------------------------------------- */
 
 /* ===== Card y contenedores ===== */
-.card {
+.card{
   background: var(--card);
   border-radius: var(--radius);
   padding: 32px;
   box-shadow: var(--shadow-1);
 }
 
-/* Contenedor general del quiz (Centra el contenido en la pantalla) */
-.quiz-wrap {
-  display: flex;
-  flex-direction: column;      /* Apila el header y el card verticalmente */
-  justify-content: center;     /* Centra el bloque del quiz verticalmente */
-  align-items: center;         /* Centra el bloque del quiz horizontalmente */
-  min-height: 100vh;           /* Ocupa toda la altura de la pantalla */
-  padding: 12px 20px 24px;
-  box-sizing: border-box;
-}
-
-/* Ajuste para pantallas pequeñas */
-@media (max-width: 768px) {
-  .quiz-wrap {
-    align-items: flex-start;
-    padding-top: 24px;
-  }
-}
-
-/* Card más ancho y cerca del header */
-.quiz-card {
-  margin: 8px auto 24px;
-  padding: 38px 40px;
+.quiz-wrap{
   max-width: 980px;
-  width: 100%;
-  content-visibility: auto;
-  contain-intrinsic-size: 600px;
+  margin: 0 auto;
+  padding: 24px;
 }
 
-.results {
+/* Reducimos la separación del card para que quede cerca del header */
+.quiz-card{
+  margin: 12px auto 24px;   /* antes 24px auto */
+  padding: 40px 36px;
+  max-width: 880px;
+}
+
+.results{
   display: grid;
   place-items: center;
   min-height: calc(100vh - 120px);
 }
-.results-card {
+.results-card{
   text-align: center;
   max-width: 560px;
 }
 
 /* ===== Form ===== */
-.label {
+.label{
   display: grid;
   gap: 6px;
   margin: 10px 0 16px;
 }
-.label-text {
+.label-text{
   font-size: 13px;
   font-weight: 600;
   color: var(--muted);
 }
-.input {
+.input{
   border: 1px solid #3b3f6f;
   border-radius: var(--radius);
   padding: 12px 14px;
@@ -73,13 +57,13 @@
   color: var(--text);
   transition: border-color .12s ease;
 }
-.input:focus {
+.input:focus{
   outline: none;
   border-color: #8f95ff;
 }
 
-/* ===== Botones genéricos ===== */
-.btn {
+/* ===== Botones genéricos (se usan también en Results) ===== */
+.btn{
   display: inline-block;
   border: none;
   cursor: pointer;
@@ -91,55 +75,44 @@
   font-size: 16px;
   transition: transform .12s ease, filter .12s ease;
 }
-.btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.02);
-}
-.btn:active {
-  transform: translateY(0);
-}
-.btn:disabled {
-  opacity: .6;
-  cursor: not-allowed;
-}
+.btn:hover{ transform: translateY(-1px); filter: brightness(1.02); }
+.btn:active{ transform: translateY(0); }
+.btn:disabled{ opacity: .6; cursor: not-allowed; }
 
 /* ===== Pill de puntaje (más grande) ===== */
-.score-pill {
+.score-pill{
   background: var(--grad);
   color: #fff;
-  padding: 10px 16px;
+  padding: 10px 16px;      /* más relleno */
   border-radius: 999px;
-  font-size: 16px;
+  font-size: 16px;         /* más grande */
   font-weight: 700;
   box-shadow: var(--shadow-2);
 }
-@media (min-width: 768px) {
-  .score-pill {
-    font-size: 18px;
-  }
+@media (min-width: 768px){
+  .score-pill{ font-size: 18px; }
 }
 
 /* ===== Header encimita y tipografía mayor ===== */
-.header {
-  padding: 0;                   /* Se elimina el padding para que no empuje el contenido */
-  margin-bottom: 24px;          /* Espacio entre el header y el card, como en la imagen */
+.header{
+  padding: calc(8px + var(--safe-top)) 0 8px; /* menos alto, queda pegado al card */
 }
-.header .brand {
+.header .brand{
   font-weight: 800;
-  font-size: clamp(26px, 4.5vw, 34px);
+  font-size: clamp(26px, 4.5vw, 34px); /* título más grande */
   text-decoration: none;
   color: var(--text);
 }
 
 /* ===== Burbujas (1..10) ===== */
-.bubbles {
+.bubbles{
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-wrap: wrap;          /* bajan de línea en pantallas pequeñas */
+  justify-content: center;  /* centradas */
   gap: 12px;
   margin-bottom: 22px;
 }
-.bubble {
+.bubble{
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -150,27 +123,23 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform .12s ease, background .12s ease, box-shadow .12s ease, opacity .12s ease;
+  transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
   border: #1f2449;
 }
-.bubble:hover {
+.bubble:hover{
   transform: translateY(-2px);
+  opacity: 1;
 }
-.bubble.active {
+.bubble.active{
   background: var(--grad);
   font-weight: 700;
   box-shadow: var(--shadow-2);
   transform: translateY(-2px);
   border: #1f2449;
 }
-.bubble.answered {
-  background: var(--grad);
-  color: #fff;
-  box-shadow: var(--shadow-2);
-  transform: translateY(-2px);
-}
-@media (max-width: 480px) {
-  .bubble {
+/* Responsive: en pantallas muy chicas se achican */
+@media (max-width: 480px){
+  .bubble{
     width: 32px;
     height: 32px;
     font-size: 12px;
@@ -178,24 +147,21 @@
 }
 
 /* ===== Opciones ===== */
-.options {
+.options{
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 18px;
   margin-top: 10px;
 }
-@media (max-width: 768px) {
-  .options {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
+@media (max-width: 768px){
+  .options{ grid-template-columns: 1fr; }
 }
-.option {
-  position: relative;
+.option{
+  position: relative;       /* para el badge */
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 18px 56px 18px 20px;
+  padding: 18px 56px 18px 20px; /* espacio a la derecha para el badge */
   background: var(--opt);
   border-radius: 16px;
   border: 2px solid transparent;
@@ -203,149 +169,60 @@
   text-align: center;
   color: var(--text);
   font-weight: 600;
-  transition: transform .08s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease, filter .12s ease;
+  transition:
+    transform .08s ease,
+    background .12s ease,
+    border-color .12s ease,
+    box-shadow .12s ease,
+    filter .12s ease;
   box-shadow: none;
 }
-.option:hover {
-  background: var(--opt-hover);
-  transform: translateY(-1px);
-}
-.option.selected {
+.option:hover{ background: var(--opt-hover); transform: translateY(-1px); }
+.option.selected{
   background: var(--grad);
   color: #fff;
   box-shadow: var(--shadow-2);
 }
-.option.correct {
-  border-color: var(--success);
-}
-.option.wrong {
-  border-color: var(--error);
-}
-.option.selected:disabled {
-  opacity: 1;
-}
-.option:disabled {
-  opacity: .8;
-  cursor: not-allowed;
-}
+.option.correct{ border-color: var(--success); }
+.option.wrong{ border-color: var(--error); }
+.option.selected:disabled{ opacity: 1; } /* no atenuar la seleccionada */
+.option:disabled{ opacity: .8; cursor: not-allowed; }
 
-.option__label {
-  pointer-events: none;
-}
+.option__label{ pointer-events: none; }
 
 /* Badge circular (contenedor del SVG) */
-.option__badge {
+.option__badge{
   position: absolute;
   right: 16px;
-  width: 28px;
-  height: 28px;
+  width: 28px; height: 28px;
   border-radius: 50%;
-  display: grid;
-  place-items: center;
+  display: grid; place-items: center;
+  /* Si quieres más contraste, puedes activar:
+  box-shadow: var(--shadow-2);
+  background: rgba(0,0,0,.25);
+  border: 2px solid rgba(255,255,255,.35);
+  */
 }
-.option__badge img {
-  width: 16px;
-  height: 16px;
-  display: block;
+.option__badge img{
+  width: 16px; height: 16px; display: block;
 }
 
-@media (max-width: 420px) {
-  .option {
-    padding-right: 48px;
-  }
-  .option__badge {
-    right: 12px;
-    width: 26px;
-    height: 26px;
-  }
-  .option__badge img {
-    width: 15px;
-    height: 15px;
-  }
+/* Ajuste móvil para que no tape el texto */
+@media (max-width: 420px){
+  .option{ padding-right: 48px; }
+  .option__badge{ right: 12px; width: 26px; height: 26px; }
+  .option__badge img{ width: 15px; height: 15px; }
 }
 
 /* Mantener el gradiente morado cuando está seleccionada */
-.option.correct.selected {
-  border-color: var(--success);
-}
-.option.wrong.selected {
-  border-color: var(--error);
-}
+.option.correct.selected{ border-color: var(--success); }
+.option.wrong.selected{   border-color: var(--error);   }
 
 /* ===== Footer ===== */
-.footer .container {
+.footer .container{
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* ===== Results (estilo como el mock) ===== */
-.results {
-  display: grid;
-  place-items: center;
-  min-height: calc(100vh - 120px);
-  padding: 24px;
-}
-.results-card--narrow {
-  max-width: 440px;
-  width: 100%;
-  padding: 36px 28px 32px;
-  text-align: center;
-  border-radius: 18px;
-  box-shadow: var(--shadow-1);
-}
 
-/* Imagen / confetti arriba */
-.result-hero {
-  display: grid;
-  place-items: center;
-  margin-bottom: 10px;
-}
-.result-hero img {
-  width: 350px;
-  height: auto;
-  display: block;
-}
-
-/* Títulos centrados */
-.results-title {
-  font-size: clamp(20px, 3.6vw, 28px);
-  font-weight: 800;
-  line-height: 1.25;
-  color: var(--text);
-  margin: 8px 0 6px;
-}
-.results-subtitle {
-  color: var(--muted);
-  font-size: clamp(14px, 2.6vw, 16px);
-  margin: 0 0 22px;
-}
-
-/* Botón ancho y centrado */
-.results-btn {
-  display: block;
-  width: min(320px, 90%);
-  margin: 0 auto;
-  border-radius: 12px;
-  font-weight: 700;
-  padding: 14px 18px;
-}
-
-/* ===== Responsivo del card amplio ===== */
-@media (max-width: 1024px) {
-  .quiz-card {
-    max-width: 920px;
-    padding: 34px 28px;
-  }
-}
-@media (max-width: 768px) {
-  .quiz-card {
-    max-width: 640px;
-    padding: 28px 20px;
-  }
-}
-@media (max-width: 480px) {
-  .quiz-card {
-    padding: 24px 16px;
-  }
-}
