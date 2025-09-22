@@ -13,14 +13,26 @@ html { scroll-behavior: smooth; }
   --safe-bottom: env(safe-area-inset-bottom);
 }
 
-/* ===== Body (tipografía, color y suavizado) ===== */
+/* ===== Body (FONDO con imagen optimizado) =====
+   - En móvil NO usamos attachment: fixed para evitar el "salto".
+   - En desktop (>=769px) sí activamos fixed para el efecto parallax.
+   - Se proveen formatos modernos con fallback (AVIF/WEBP/JPG). */
 body{
   margin: 0;
   font-family: 'Be Vietnam Pro', system-ui, Segoe UI, Roboto, Arial, sans-serif;
   font-size: var(--fs-md);
   color: var(--text);
+  background:
+    image-set(
+      
+      url("/src/assets/bg.jpg")  type("image/jpeg")
+    )
+    center/cover no-repeat;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+@media (min-width: 769px){
+  body{ background-attachment: fixed; }
 }
 
 /* ===== Layout genérico ===== */
@@ -107,58 +119,44 @@ img{ max-width: 100%; height: auto; display: block; }
   white-space: nowrap; border: 0;
 }
 
-/* =======================================================================
-   FONDO ESTABLE — Cubre siempre y evita “parpadeos”/torceduras
-   - Usamos html::before para aislarlo del árbol de layout.
-   - En móvil NO usamos fixed (buggy); en desktop sí (efecto parallax).
-   - Unidades de viewport modernas para cubrir Fold/Flip.
-   ======================================================================= */
 
-/* 0) Evita que transform/filter/perspective afecten el fondo fijo */
-html, body {
-  transform: none !important;
-  filter: none !important;
-  perspective: none !important;
-}
 
-/* 1) Altura mínima con svh/dvh (barras móviles) */
-html, body { height: auto; }            /* sin lock al 100% */
+/* === Fondo que SIEMPRE cubre en móviles altos (Fold/Flip) === */
+/* 1) aseguramos altura mínima con unidades de viewport modernas */
+html, body { height: auto; }           /* evitamos locking a 100% del html */
 body{
-  min-height: 100svh;
+  min-height: 100svh;                  /* “small viewport” estable al mostrar toolbars */
 }
 @supports (min-height: 100dvh){
-  body{ min-height: 100dvh; }
+  body{ min-height: 100dvh; }          /* usa el viewport “dinámico” cuando exista */
 }
 
-/* 2) Color base para evitar flashes mientras carga la imagen */
-html { background-color: #1f2449; }
-
-/* 3) Fondo en pseudo-elemento (no en body) */
-body{ position: relative; background: none; } /* quitamos cualquier fondo directo */
-
-html::before{
+/* 2) movemos la imagen a un pseudo-elemento que tapiza todo el documento */
+body{
+  position: relative;
+  background: none;                     /* quitamos el background directo del body */
+}
+body::before{
   content: "";
-  position: fixed;            /* desktop: parallax suave y estable */
-  inset: 0;
+  position: absolute;                   /* en móvil NO usamos fixed para evitar parpadeo */
+  inset: 0;                             /* top/right/bottom/left = 0 */
   z-index: -1;
   background:
     image-set(
-      url("/src/assets/bg.jpg") type("image/jpeg"),
-      url("/src/assets/bg.jpg") type("image/jpeg"),
+      
       url("/src/assets/bg.jpg")  type("image/jpeg")
-    );
-  background-repeat: no-repeat;
-  background-position: top center;
-  background-size: cover;
-  will-change: transform;
-  image-rendering: auto;
+    )
+    center/cover no-repeat;
 }
 
-/* 4) En móviles evitamos fixed (mejor rendimiento y sin “saltos”) */
-@media (max-width: 768px){
-  html::before{
-    position: absolute;       /* se estira con la página */
+/* 3) en desktop reactivamos el “parallax” con fixed (sin afectar móviles) */
+@media (min-width: 769px){
+  body::before{
+    position: fixed;
   }
 }
+
+/* 4) color base por si tarda la imagen (evita flashes) */
+html { background-color: #1f2449; }     /* o usa tu token de fondo */
 
 
