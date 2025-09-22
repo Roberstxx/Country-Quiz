@@ -1,20 +1,18 @@
 // src/services/countriesApi.js
 
 /**
- * Rest Countries base:
+ * Rest Countries v3 (EN por defecto en name.common)
  * https://restcountries.com/v3.1/all?fields=...
  *
- * Cambios para inglés:
- * - Forzamos header "Accept-Language: en,en-US;q=0.9"
- * - Preferimos translations.eng.common en normalizeCountry
- * - Desactivamos caché del navegador/CDN (cache: "no-store")
- * - Añadimos "translations" y "cca2" a fields (IDs estables y preferencia ENG)
- * - Cache-bust (&v=2) para evitar respuestas viejas
+ * Claves del enfoque:
+ * - NO pedimos `translations` (así evitamos que salgan nombres localizados).
+ * - Usamos SIEMPRE `name.common` (viene en inglés).
+ * - Forzamos header "Accept-Language: en" por robustez (aunque no es estrictamente necesario).
+ * - cache: "no-store" + &v=3 para evitar cachés viejos.
  */
 
 const DEFAULT_FIELDS = [
-  "name",
-  "translations", // para preferir ENG si existe
+  "name",        // name.common -> EN
   "cca2",
   "flags",
   "capital",
@@ -25,86 +23,66 @@ const DEFAULT_FIELDS = [
 ];
 
 const LIGHT_FIELDS = [
-  "name",
-  "translations", // idem
+  "name",        // EN
   "flags",
   "cca2",
-]; // para el quiz de banderas (ligero pero con IDs y ENG)
+];
 
-/**
- * Construye la URL con fields + cache-bust.
- */
+/** Construye URL con fields + cache-bust */
 function buildUrl(fields) {
   const f = Array.isArray(fields) && fields.length ? fields : DEFAULT_FIELDS;
-  // Evita espacios, duplicados y ordena para cachés más consistentes
-  const unique = [...new Set(f.map((s) => String(s).trim()))].sort();
-  // v=2 para forzar recarga si tu ruta intermedia tiene caché
-  return `https://restcountries.com/v3.1/all?fields=${unique.join(",")}&v=2`;
+  const unique = [...new Set(f.map(s => String(s).trim()))].sort();
+  // v=3: evita respuestas cacheadas anteriores
+  return `https://restcountries.com/v3.1/all?fields=${unique.join(",")}&v=3`;
 }
 
-/**
- * Fetch con timeout (AbortController), forzando inglés y sin caché.
- */
+/** Fetch con timeout, EN forzado y sin caché */
 async function fetchJson(url, { timeoutMs = 12000 } = {}) {
   const ctrl = new AbortController();
   const id = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     const res = await fetch(url, {
       signal: ctrl.signal,
-      headers: {
-        "Accept-Language": "en,en-US;q=0.9", // 🔹 fuerza inglés
-      },
-      cache: "no-store", // 🔹 evita cache del navegador/CDN
+      headers: { "Accept-Language": "en,en-US;q=0.9" }, // robustez
+      cache: "no-store",
     });
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status} al consultar ${url}`);
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status} al consultar ${url}`);
     return await res.json();
   } finally {
     clearTimeout(id);
   }
 }
 
-/**
- * Normaliza un país a un shape estable para el quiz, preferentemente en inglés.
- */
+/** Normaliza un país (en inglés) */
 function normalizeCountry(c) {
   try {
-    // nombre en inglés priorizando traducción ENG; luego name.common
     const nameCommon =
-      c?.translations?.eng?.common ??
       c?.name?.common ??
       (typeof c?.name === "string" ? c.name : "") ??
       "";
 
-    const capital =
-      Array.isArray(c?.capital) && c.capital.length
-        ? c.capital[0]
-        : c?.capital || "";
+    const capital = Array.isArray(c?.capital) && c.capital.length
+      ? c.capital[0]
+      : (c?.capital || "");
 
-    const flagSvg = c?.flags?.svg || "";
-    const flagPng = c?.flags?.png || "";
-    const flagUrl = flagSvg || flagPng || "";
+    const flagUrl = c?.flags?.svg || c?.flags?.png || "";
 
-    const currencies =
-      c?.currencies
-        ? Object.values(c.currencies)
-            .map((x) => (x?.name ? String(x.name) : ""))
-            .filter(Boolean)
-        : [];
+    const currencies = c?.currencies
+      ? Object.values(c.currencies)
+          .map(x => (x?.name ? String(x.name) : ""))
+          .filter(Boolean)
+      : [];
 
-    // Rest Countries devuelve languages como { iso: "English", ... } (en inglés con nuestro header)
-    const languages =
-      c?.languages
-        ? Object.values(c.languages)
-            .map((x) => (x ? String(x) : ""))
-            .filter(Boolean)
-        : [];
+    const languages = c?.languages
+      ? Object.values(c.languages)
+          .map(x => (x ? String(x) : ""))
+          .filter(Boolean)
+      : [];
 
     return {
-      id: c?.cca2 ?? nameCommon, // id estable (preferimos cca2)
-      name: nameCommon,
-      capital,
+      id: c?.cca2 ?? nameCommon,
+      name: nameCommon,   // ← EN
+      capital,            // suele venir en EN también
       region: c?.region || "",
       subregion: c?.subregion || "",
       flagUrl,
@@ -116,9 +94,7 @@ function normalizeCountry(c) {
   }
 }
 
-/**
- * Quita nulos y duplicados (por id).
- */
+/** Quita nulos y duplicados por id */
 function dedupeAndClean(list) {
   const out = [];
   const seen = new Set();
@@ -131,12 +107,7 @@ function dedupeAndClean(list) {
   return out;
 }
 
-/**
- * API pública:
- * - fetchCountries(): completo (para capital/moneda/idioma/region/flag).
- * - fetchCountriesLight(): ligero (solo nombre + bandera + cca2), ideal para quiz de banderas.
- */
-
+/** API pública */
 export async function fetchCountries() {
   const url = buildUrl(DEFAULT_FIELDS);
   const raw = await fetchJson(url);
@@ -146,13 +117,10 @@ export async function fetchCountries() {
 export async function fetchCountriesLight() {
   const url = buildUrl(LIGHT_FIELDS);
   const raw = await fetchJson(url);
-  // Aunque pedimos light, normalizamos igual para que el shape sea uniforme
   return dedupeAndClean(
-    raw.map((c) =>
+    raw.map(c =>
       normalizeCountry({
-        // construimos un objeto mínimo compatible con normalizeCountry
         name: c?.name,
-        translations: c?.translations,
         flags: c?.flags,
         cca2: c?.cca2,
       })
@@ -160,9 +128,7 @@ export async function fetchCountriesLight() {
   );
 }
 
-/**
- * Utilidad opcional: obtiene N países aleatorios del listado dado.
- */
+/** Utilidad: sample aleatorio */
 export function pickRandomCountries(countries, n = 10) {
   const a = [...countries];
   for (let i = a.length - 1; i > 0; i--) {
@@ -171,5 +137,7 @@ export function pickRandomCountries(countries, n = 10) {
   }
   return a.slice(0, Math.max(0, Math.min(n, a.length)));
 }
+
+
 
 
