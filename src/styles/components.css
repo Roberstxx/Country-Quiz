@@ -292,26 +292,6 @@
 }
 
 
-html, body {
-  width: 100%;
-  max-width: 1280px;   /* el ancho fijo como el mock */
-  margin: 0 auto;      /* centra horizontalmente */
-  overflow-x: hidden;  /* evita scroll horizontal */
-}
-
-html, body {
-  height: 100vh;       /* ocupa el 100% del alto visible */
-  overflow-y: hidden;  /* oculta scroll vertical */
-}
-
-
-
-
-
-
-
-
-
 /* ===== Responsivo del card amplio ===== */
 @media (max-width: 1024px){
   .quiz-card{ max-width: 920px; padding: 34px 28px; }
@@ -322,4 +302,5 @@ html, body {
 @media (max-width: 480px){
   .quiz-card{ padding: 24px 16px; }
 }
+
 
