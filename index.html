@@ -2,67 +2,47 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <!-- Viewport -->
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-
-    <!-- Título & Descripción -->
+    <!-- Title & Description -->
     <title>World Quiz - Juego interactivo de países 🌍</title>
-    <meta
-      name="description"
-      content="World Quiz es una aplicación interactiva donde pondrás a prueba tus conocimientos sobre países, banderas, capitales y regiones del mundo."
-    />
+    <meta name="description" content="World Quiz es una aplicación interactiva donde pondrás a prueba tus conocimientos sobre países, banderas, capitales y regiones del mundo." />
 
-    <!-- Canonical -->
-    <link rel="canonical" href="https://country-quiz-pink.vercel.app/" />
+    <!-- SEO Keywords -->
+    <meta name="keywords" content="quiz, países, banderas, capitales, regiones, juego educativo, geografía, world quiz" />
 
-    <!-- Favicon desde la RAÍZ -->
-    <!-- Usa el .ico de la raíz. 'shortcut icon' mejora compatibilidad antigua. -->
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <!-- Author -->
+    <meta name="author" content="World Quiz Team" />
 
-    <!-- (Opcional) Apple touch icon si algún día lo agregas en /public -->
-    <!-- <link rel="apple-touch-icon" href="/apple-touch-icon.png" /> -->
+    <!-- Favicon -->
+    <!-- Solo cambié el type para .ico -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
-    <!-- Open Graph / Social -->
-    <meta property="og:site_name" content="World Quiz" />
+    <!-- Open Graph / Social Media -->
     <meta property="og:title" content="World Quiz 🌍 - Juego interactivo de países" />
-    <meta
-      property="og:description"
-      content="Pon a prueba tu conocimiento de geografía con banderas, capitales y regiones."
-    />
+    <meta property="og:description" content="Pon a prueba tu conocimiento de geografía con banderas, capitales y regiones." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://country-quiz-pink.vercel.app/" />
-    <!-- IMPORTANTE: URL ABSOLUTA y archivo real en /public/og.jpg -->
+    <!-- Pónlo igual a la URL que compartes (tu ruta /quiz) -->
+    <meta property="og:url" content="https://country-quiz-pink.vercel.app/quiz" />
+    <!-- Imagen absoluta y pública en /public/og.jpg -->
     <meta property="og:image" content="https://country-quiz-pink.vercel.app/og.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="World Quiz 🌍" />
-    <meta
-      name="twitter:description"
-      content="Juego educativo sobre países, banderas y capitales del mundo."
-    />
+    <meta name="twitter:description" content="Juego educativo sobre países, banderas y capitales del mundo." />
     <meta name="twitter:image" content="https://country-quiz-pink.vercel.app/og.jpg" />
 
-    <!-- PWA / Mobile -->
+    <!-- PWA/ Mobile (Opcional si luego quieres hacerlo progresivo) -->
     <meta name="theme-color" content="#393F6E" />
-    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-    <!-- Fuentes -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Fuente (opcional si no usas en CSS) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   </head>
 
   <body>
@@ -70,3 +50,4 @@
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+
