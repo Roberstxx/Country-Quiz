@@ -261,6 +261,20 @@
   margin: 0 0 22px;
 }
 
+/* burbuja marcada como RESPONDIDA (rosa/gradiente) */
+.bubble.answered{
+  background: var(--grad);
+  color: #fff;
+  box-shadow: var(--shadow-2);
+  transform: translateY(-2px);
+}
+
+/* si quieres distinguir la activa de la respondida, puedes suavizar así: */
+.bubble.answered:not(.active){
+  filter: saturate(.95);
+}
+
+
 /* Botón ancho y centrado */
 .results-btn{
   display: block;
@@ -270,3 +284,4 @@
   font-weight: 700;
   padding: 14px 18px;
 }
+
