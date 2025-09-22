@@ -16,18 +16,17 @@ export function buildByType(countries, type, amount = 10) {
   }
 }
 
-// ---------- Tipos ----------
+// ---------- Types of Questions ----------
 
 // FLAG
 function buildFlagQuestions(countries, amount) {
-  const pool = countries
-    .filter(c => c.name && c.flagUrl);
+  const pool = countries.filter(c => c.name && c.flagUrl);
   const names = pool.map(c => c.name);
   const picked = pickN(pool, Math.min(amount, pool.length));
-  return picked.map((c) => ({
+  return picked.map(c => ({
     id: id(),
     type: "flag",
-    prompt: "¿A qué país pertenece esta bandera?",
+    prompt: "Which country does this flag belong to?", // ENGLISH
     flagUrl: c.flagUrl,
     options: shuffle([c.name, ...pickN(names.filter(n => n !== c.name), 3)]),
     answer: c.name
@@ -42,7 +41,7 @@ function buildCapitalQuestions(countries, amount) {
   return picked.map(c => ({
     id: id(),
     type: "capital",
-    prompt: `¿Cuál es la capital de ${c.name}?`,
+    prompt: `What is the capital city of ${c.name}?`, // ENGLISH
     options: shuffle([c.capital, ...pickN(capitals.filter(x => x !== c.capital), 3)]),
     answer: c.capital
   }));
@@ -56,7 +55,7 @@ function buildRegionQuestions(countries, amount) {
   return picked.map(c => ({
     id: id(),
     type: "region",
-    prompt: `¿En qué región se encuentra ${c.name}?`,
+    prompt: `Which region does ${c.name} belong to?`, // ENGLISH
     options: shuffle([c.region, ...pickN(regions.filter(r => r !== c.region), 3)]),
     answer: c.region
   }));
@@ -65,14 +64,14 @@ function buildRegionQuestions(countries, amount) {
 // CURRENCY
 function buildCurrencyQuestions(countries, amount) {
   const withCur = countries
-    .map(c => ({...c, firstCur: c.currencies?.[0] || null}))
+    .map(c => ({ ...c, firstCur: c.currencies?.[0] || null }))
     .filter(c => c.name && c.firstCur);
   const all = [...new Set(withCur.map(c => c.firstCur))];
   const picked = pickN(withCur, Math.min(amount, withCur.length));
   return picked.map(c => ({
     id: id(),
     type: "currency",
-    prompt: `¿Cuál es una moneda usada en ${c.name}?`,
+    prompt: `Which of the following is a currency used in ${c.name}?`, // ENGLISH
     options: shuffle([c.firstCur, ...pickN(all.filter(x => x !== c.firstCur), 3)]),
     answer: c.firstCur
   }));
@@ -81,15 +80,17 @@ function buildCurrencyQuestions(countries, amount) {
 // LANGUAGE
 function buildLanguageQuestions(countries, amount) {
   const withLang = countries
-    .map(c => ({...c, firstLang: c.languages?.[0] || null}))
+    .map(c => ({ ...c, firstLang: c.languages?.[0] || null }))
     .filter(c => c.name && c.firstLang);
   const all = [...new Set(withLang.map(c => c.firstLang))];
   const picked = pickN(withLang, Math.min(amount, withLang.length));
   return picked.map(c => ({
     id: id(),
     type: "language",
-    prompt: `¿Cuál es un idioma hablado en ${c.name}?`,
+    prompt: `Which of the following is a language spoken in ${c.name}?`, // ENGLISH
     options: shuffle([c.firstLang, ...pickN(all.filter(x => x !== c.firstLang), 3)]),
     answer: c.firstLang
   }));
 }
+
+
