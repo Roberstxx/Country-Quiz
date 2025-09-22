@@ -32,13 +32,17 @@ body{
 }
 
 /* Limita el ancho visual de la app en desktop sin cortar la altura */
-.app{
+.app {
   width: min(100%, 1280px);
   margin-inline: auto;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   padding-bottom: var(--safe-bottom);
+
+  /* 👇 Agrega estas líneas */
+  justify-content: center;
+  align-items: center;
 }
 
 .main{ flex: 1; }
@@ -152,3 +156,4 @@ html::before{
 @media (min-width: 769px){
   html::before{ position: fixed; }
 }
+
