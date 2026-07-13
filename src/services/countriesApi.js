@@ -2,13 +2,13 @@
 
 /**
  * Rest Countries v3 (EN por defecto en name.common)
- * https://restcountries.com/v3.1/all?fields=...
+ * Se consulta mediante /api/countries para evitar bloqueos CORS del navegador.
  *
  * Claves del enfoque:
  * - NO pedimos `translations` (así evitamos que salgan nombres localizados).
  * - Usamos SIEMPRE `name.common` (viene en inglés).
- * - Forzamos header "Accept-Language: en" por robustez (aunque no es estrictamente necesario).
- * - cache: "no-store" + &v=3 para evitar cachés viejos.
+ * - El proxy de Vercel consulta Rest Countries del lado servidor.
+ * - cache: "no-store" para evitar cachés viejos en el navegador.
  */
 
 const DEFAULT_FIELDS = [
@@ -32,8 +32,7 @@ const LIGHT_FIELDS = [
 function buildUrl(fields) {
   const f = Array.isArray(fields) && fields.length ? fields : DEFAULT_FIELDS;
   const unique = [...new Set(f.map(s => String(s).trim()))].sort();
-  // v=3: evita respuestas cacheadas anteriores
-  return `https://restcountries.com/v3.1/all?fields=${unique.join(",")}&v=3`;
+  return `/api/countries?fields=${encodeURIComponent(unique.join(","))}`;
 }
 
 /** Fetch con timeout, EN forzado y sin caché */
@@ -43,7 +42,6 @@ async function fetchJson(url, { timeoutMs = 12000 } = {}) {
   try {
     const res = await fetch(url, {
       signal: ctrl.signal,
-      headers: { "Accept-Language": "en,en-US;q=0.9" }, // robustez
       cache: "no-store",
     });
     if (!res.ok) throw new Error(`HTTP ${res.status} al consultar ${url}`);
