@@ -5,9 +5,8 @@ export default function Bubble({ number, active = false, answered = false, onCli
     (active ? " active" : "") +
     (answered ? " answered" : "");
 
-  return {
-    /* button to navigate between questions */
-  } && (
+  // button to navigate between questions
+  return (
     <button
       type="button"
       className={cls}
