@@ -35,7 +35,7 @@ function buildUrl(fields) {
   return `/api/countries?fields=${encodeURIComponent(unique.join(","))}`;
 }
 
-/** Fetch con timeout, EN forzado y sin caché */
+/** Fetch con timeout y sin caché */
 async function fetchJson(url, { timeoutMs = 12000 } = {}) {
   const ctrl = new AbortController();
   const id = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -45,7 +45,13 @@ async function fetchJson(url, { timeoutMs = 12000 } = {}) {
       cache: "no-store",
     });
     if (!res.ok) throw new Error(`HTTP ${res.status} al consultar ${url}`);
-    return await res.json();
+
+    const data = await res.json();
+    if (!Array.isArray(data)) {
+      throw new Error(`Respuesta inválida al consultar ${url}`);
+    }
+
+    return data;
   } finally {
     clearTimeout(id);
   }
